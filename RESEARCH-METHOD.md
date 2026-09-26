@@ -31,3 +31,14 @@ What result, evidence threshold, or constraint tells the researcher to stop?
 ## RESULT / LIMITATIONS
 
 What was found? Which parts are facts, which are interpretations, and what remains unknown?
+
+
+## SEARCH STRATEGY
+
+For the first real probe, use [Stalactite Search](docs/METHOD-stalactite-search.md):
+
+```text
+FIELD → CLUSTERS → CANDIDATES → SURVIVORS → WATCH / DEEP DIVE
+```
+
+Descend only when the current question requires more evidence. Preserve the resulting Research Map so later work can resume from an existing branch instead of restarting from zero.
