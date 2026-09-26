@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/VladChok/poisk-dvizhok/schema/evidence.schema.json",
+  "title": "Research evidence line — v0",
+  "description": "One line of evidence.jsonl = one confirmation of one claim. Contract: docs/CONTRACT-research-map-evidence-v0.md. Key order is fixed as in properties. Cross-field rules (unique claim_id, map_node resolves, no position => limitation not null) are checked by tools/research-map.mjs validate-evidence.",
+  "type": "object",
+  "properties": {
+    "claim_id": { "type": "string", "minLength": 1 },
+    "claim": { "type": "string", "minLength": 1 },
+    "kind": { "enum": ["fact", "author_claim", "interpretation"] },
+    "pointer": { "$ref": "#/$defs/pointer" },
+    "limitation": { "type": ["string", "null"] },
+    "map_node": { "type": "string", "minLength": 1 }
+  },
+  "required": ["claim_id", "claim", "kind", "pointer", "limitation", "map_node"],
+  "additionalProperties": false,
+  "$defs": {
+    "pointer": {
+      "description": "Shared source pointer: evidence.pointer and map node sources[] items. position is absent only on scope pointers (rule C).",
+      "type": "object",
+      "properties": {
+        "locator": { "type": "string", "minLength": 1, "description": "URL or repository path" },
+        "position": { "type": "string", "minLength": 1, "description": "line / section / anchor" },
+        "version": { "type": "string", "minLength": 1, "description": "commit | tag | \"retrieved <ISO date>\"" }
+      },
+      "required": ["locator", "version"],
+      "additionalProperties": false
+    }
+  }
+}
