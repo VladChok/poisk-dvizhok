@@ -1,0 +1,303 @@
+{
+  "brief": "demo-agent-harness",
+  "nodes": [
+    {
+      "id": "F0",
+      "level": "FIELD",
+      "title": "Agent harness repositories and source research tools",
+      "parent": null,
+      "status": "OPEN",
+      "reason": "",
+      "sources": [],
+      "reach": [],
+      "notes": "Seed demo of the v0 map shape, not a research result. Brief criterion: open source, license detected by GitHub as OSI-permissive, push to main within 6 months of 2026-09-26, usable as an external capability. OPEN because CL2 still has an untriaged candidate."
+    },
+    {
+      "id": "CL1",
+      "level": "CLUSTER",
+      "title": "Coding-agent harnesses (terminal agents with a tool loop)",
+      "parent": "F0",
+      "status": "DONE",
+      "reason": "All three candidates resolved: 1 survivor, 1 watch, 1 cut.",
+      "sources": [],
+      "reach": [],
+      "notes": ""
+    },
+    {
+      "id": "CA-codex",
+      "level": "CANDIDATE",
+      "title": "openai/codex",
+      "parent": "CL1",
+      "status": "SURVIVED",
+      "reason": "Apache-2.0 detected by GitHub; main pushed 2026-09-26; harness source is in the repository.",
+      "sources": [
+        {
+          "locator": "https://github.com/openai/codex",
+          "version": "b334d5b3f2d9441b95286a8c2af8c2152737d977"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-claude-code",
+      "level": "CANDIDATE",
+      "title": "anthropics/claude-code",
+      "parent": "CL1",
+      "status": "CUT",
+      "reason": "Fails the license criterion: GitHub detects no license; LICENSE.md reserves all rights.",
+      "sources": [
+        {
+          "locator": "https://github.com/anthropics/claude-code",
+          "position": "LICENSE.md",
+          "version": "7779afb12e3635f46f56ec823979d68350ae000b"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-aider",
+      "level": "CANDIDATE",
+      "title": "Aider-AI/aider",
+      "parent": "CL1",
+      "status": "WATCH",
+      "reason": "Apache-2.0, but the last push to main is 2026-05-22 — at the edge of the 6-month activity window; recheck before 2026-11-22.",
+      "sources": [
+        {
+          "locator": "https://github.com/Aider-AI/aider",
+          "version": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CL2",
+      "level": "CLUSTER",
+      "title": "Source-access tools for agents (web and platform reach)",
+      "parent": "F0",
+      "status": "OPEN",
+      "reason": "",
+      "sources": [],
+      "reach": [],
+      "notes": "Resume here: CA-jina-reader is not triaged."
+    },
+    {
+      "id": "CA-agent-reach",
+      "level": "CANDIDATE",
+      "title": "Panniantong/Agent-Reach",
+      "parent": "CL2",
+      "status": "DEEP_DIVE",
+      "reason": "MIT, main pushed 2026-09-15, one module per source platform — opened deeply as a pattern donor for source adapters.",
+      "sources": [
+        {
+          "locator": "https://github.com/Panniantong/Agent-Reach",
+          "version": "a19a171fa980a0785849596492e0af4db800c82f"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "DD-agent-reach",
+      "level": "DEEP_DIVE",
+      "title": "Agent-Reach channel and doctor structure",
+      "parent": "CA-agent-reach",
+      "status": "SURVIVED",
+      "reason": "Channel base = can_handle(url) + check(config) with an ordered list of fallback backends, plus a doctor with tests: a small adapter pattern that fits an external-capability harness.",
+      "sources": [
+        {
+          "locator": "https://github.com/Panniantong/Agent-Reach",
+          "position": "agent_reach/channels/base.py",
+          "version": "a19a171fa980a0785849596492e0af4db800c82f"
+        },
+        {
+          "locator": "https://github.com/Panniantong/Agent-Reach",
+          "position": "agent_reach/doctor.py",
+          "version": "a19a171fa980a0785849596492e0af4db800c82f"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": "Pattern donor only; no code was run."
+    },
+    {
+      "id": "CA-firecrawl",
+      "level": "CANDIDATE",
+      "title": "firecrawl/firecrawl",
+      "parent": "CL2",
+      "status": "CUT",
+      "reason": "Fails the license criterion: AGPL-3.0 at the repository root.",
+      "sources": [
+        {
+          "locator": "https://github.com/firecrawl/firecrawl",
+          "position": "LICENSE",
+          "version": "f75a8d40b103129f56f947418bfa06a04a9ad5b0"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-playwright-mcp",
+      "level": "CANDIDATE",
+      "title": "microsoft/playwright-mcp",
+      "parent": "CL2",
+      "status": "SURVIVED",
+      "reason": "Apache-2.0; main pushed 2026-09-25; browser access exposed as an MCP server.",
+      "sources": [
+        {
+          "locator": "https://github.com/microsoft/playwright-mcp",
+          "version": "e87bb897e15a6f2af402afb0f10b45eced9e1f9b"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-jina-reader",
+      "level": "CANDIDATE",
+      "title": "jina-ai/reader",
+      "parent": "CL2",
+      "status": "OPEN",
+      "reason": null,
+      "sources": [
+        {
+          "locator": "https://github.com/jina-ai/reader",
+          "version": "1574bfd380d249c86c82db4dace0d9c8fe17e2b1"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": "Not triaged. Next step: apply the activity criterion (last push 2026-05-22, same edge case as CA-aider)."
+    },
+    {
+      "id": "CL3",
+      "level": "CLUSTER",
+      "title": "Research-agent frameworks (report generators)",
+      "parent": "F0",
+      "status": "DONE",
+      "reason": "Both candidates resolved: 1 survivor, 1 cut.",
+      "sources": [],
+      "reach": [],
+      "notes": ""
+    },
+    {
+      "id": "CA-gpt-researcher",
+      "level": "CANDIDATE",
+      "title": "assafelovic/gpt-researcher",
+      "parent": "CL3",
+      "status": "SURVIVED",
+      "reason": "Apache-2.0; main pushed 2026-09-26.",
+      "sources": [
+        {
+          "locator": "https://github.com/assafelovic/gpt-researcher",
+          "version": "3e0b756211d7592809ba91b3541604bfd5b922e6"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-storm",
+      "level": "CANDIDATE",
+      "title": "stanford-oval/storm",
+      "parent": "CL3",
+      "status": "CUT",
+      "reason": "Fails the activity criterion: no commit on main since 2025-09-30.",
+      "sources": [
+        {
+          "locator": "https://github.com/stanford-oval/storm",
+          "version": "fb951af7744dab086e34962e9bc6fe878e145f83"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-09-26"
+        },
+        {
+          "tool": "gh",
+          "at": "2026-09-26"
+        }
+      ],
+      "notes": ""
+    }
+  ]
+}
