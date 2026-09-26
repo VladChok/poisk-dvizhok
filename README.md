@@ -4,11 +4,13 @@
 
 **STATUS:** EARLY / BOOTSTRAP
 
-`poisk-dvizhok` is the shared Research department for interchangeable Research and News agents. It is not one researcher-agent. It is intended to become the common environment in which different agents can use the same research method, reach sources, preserve evidence, recover prior context, and hand work to the next researcher.
+`poisk-dvizhok` is shared Research Engine infrastructure used by interchangeable Research and News roles. It is not one researcher-agent. It is intended to become the common environment in which different agents can use the same research method, reach sources, preserve evidence, recover prior context, and hand work to the next researcher.
 
 ```text
-DEPARTMENT = ENGINE
+ROLE ≠ ENGINE ≠ EXECUTOR
 
+RESEARCH / NEWS roles
+        ↓ use
 RESEARCH ENGINE
 ├── METHOD
 ├── SOURCE HARNESS
@@ -44,18 +46,18 @@ The current architectural hypothesis is recorded in [Architecture notes](docs/AR
 
 ## Upstream donor
 
-[Agent Reach](https://github.com/Panniantong/Agent-Reach) is registered as a donor under review for source and platform access mechanisms.
+[Agent Reach](https://github.com/Panniantong/Agent-Reach) has completed an initial source-first donor review for source and platform access mechanisms.
 
-No decision has been made to fork it, add it as a dependency, vendor it, or port parts of it. No upstream code has been imported into this repository. See [Upstreams](docs/UPSTREAMS.md).
+No upstream code has been imported. The current direction is to treat Agent Reach as an external source capability and pattern donor rather than a Research Engine base; this is not yet a frozen integration decision. See [Source Harness review](docs/REVIEW-source-harness-agent-reach.md) and [Upstreams](docs/UPSTREAMS.md).
 
 ## Next review
 
-The next step is a source-first review of Agent Reach and the current Research / News workflow. That review should compare integration choices and maintenance cost before Research Engine v0 is designed.
+The Agent Reach source-first review is complete. The next step is a bounded architecture review against the current Research / News workflow and the first real research probe before Research Engine v0 is designed.
 
 ```text
-SOURCE REVIEW
+SOURCE REVIEW ✅
       ↓
-FORK vs DEPENDENCY vs SELECTIVE PORT
+ROLE / ENGINE / EVIDENCE BOUNDARY
       ↓
 ONE REAL RESEARCH TASK
       ↓
@@ -64,4 +66,4 @@ EVIDENCE FROM USE
 RESEARCH ENGINE v0
 ```
 
-Until that review happens, this repository is a place to preserve the question and collect evidence—not an answer disguised as an architecture.
+Until that bounded review and real probe happen, this repository remains evidence and scaffolding—not an answer disguised as a frozen architecture.
