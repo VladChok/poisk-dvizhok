@@ -2,7 +2,7 @@
 
 **Status:** bootstrap skeleton
 
-This is the minimum shape of a research assignment and handoff. It is intentionally incomplete. Real research tasks should test the shape before additional process or abstractions are added.
+This is the minimum operational shape of a research assignment and handoff used by the Research Engine. The stable responsibility contract for the Research role lives in Structura `docs/roles/RESEARCH.md`; this file must not become a second conflicting role definition. It is intentionally incomplete. Real research tasks should test the shape before additional process or abstractions are added.
 
 ## QUESTION
 
