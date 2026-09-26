@@ -41,6 +41,7 @@ The purpose of the engine is to make those foundations shared and durable instea
 - **EVIDENCE** — material and provenance supporting a research conclusion. See [research/README.md](research/README.md).
 - **MEMORY** — prior findings, known sources, limitations, and open questions. See [memory/README.md](memory/README.md).
 - **LEGEND** — shared research terms when real work establishes a need for them. See [LEGEND.md](LEGEND.md).
+- **MAP / EVIDENCE CONTRACT v0** — frozen shape of `map.json` and `evidence.jsonl`: [contract](docs/CONTRACT-research-map-evidence-v0.md), [schemas](schema/), CLI `node tools/research-map.mjs validate | validate-evidence | render | save`.
 
 The current architectural hypothesis is recorded in [Architecture notes](docs/ARCHITECTURE-NOTES.md).
 

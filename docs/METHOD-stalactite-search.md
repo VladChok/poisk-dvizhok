@@ -61,6 +61,7 @@ A branch can be:
 - refreshed without repeating the whole investigation.
 
 The map is durable project context, not disposable search history.
+Levels = the `level` field of the map (`FIELD | CLUSTER | CANDIDATE | DEEP_DIVE`; WATCH is a status), see [CONTRACT](CONTRACT-research-map-evidence-v0.md).
 
 ## Search progression
 
