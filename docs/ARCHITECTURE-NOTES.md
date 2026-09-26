@@ -60,3 +60,28 @@ The Research Engine must retain ownership of METHOD, EVIDENCE and MEMORY semanti
 See [REVIEW-source-harness-agent-reach.md](./REVIEW-source-harness-agent-reach.md).
 
 This is still not Research Engine v0.
+
+
+## Working search method — Stalactite Search
+
+The first Research Engine probe may use **Stalactite Search** as its minimal search strategy.
+
+```text
+FIELD
+  ↓
+CLUSTERS
+  ↓
+CANDIDATES
+  ↓
+SURVIVORS
+  ↓
+WATCH / DEEP DIVE
+```
+
+The durable artifact is a **Research Map / Search Map**: a reusable graph of how the search space narrowed, why branches were continued or cut, and where future research may resume.
+
+This does not turn Search Map into a universal domain entity yet. It is a working artifact for the first probe.
+
+Source access remains external/capability-based. EVIDENCE remains separate from the map. Future source trust/security and additional search heuristics are reserved extension points only; they are not designed in v0.
+
+See [Stalactite Search Method](./METHOD-stalactite-search.md).
