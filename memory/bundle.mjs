@@ -42,6 +42,7 @@ export function readBundle(directory) {
   }
   if (!files.get('brief.md')?.toString('utf8').trim()) fail('INVALID_BRIEF');
   clean(map); for (const line of evidence) clean(line.value);
-  const id = hash(JSON.stringify([...files].sort(([a], [b]) => a.localeCompare(b)).map(([name, bytes]) => [name, hash(bytes)])));
+  // Stable across OS/user locale, including mixed Cyrillic/Latin artifact paths.
+  const id = hash(JSON.stringify([...files].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([name, bytes]) => [name, hash(bytes)])));
   return {id, brief: map.brief, map, evidence: evidence.map(e => e.value), files};
 }
