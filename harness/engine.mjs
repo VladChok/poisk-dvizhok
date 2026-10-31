@@ -88,9 +88,15 @@ export function createHarness(input = {}, deps = {}) {
       }
       const data = jsonResponse(response);
       if (!Array.isArray(data.items)) fail('INVALID_RESPONSE');
+      result.coverage.pagesFetched++; result.coverage.itemsSeen += data.items.length;
       if (data.incomplete_results) result.limitations.push('INCOMPLETE_SEARCH');
+      const inspectedBefore = result.coverage.itemsInspected;
       for (const item of data.items) {
-        if (item.private !== false || !validRepo(item.full_name) || seen.has(item.id)) continue;
+        result.coverage.itemsInspected++;
+        if (!item || typeof item !== 'object' || !Number.isSafeInteger(item.id) || item.id < 1) { result.coverage.invalidItems++; continue; }
+        if (item.private === true) { result.coverage.filteredItems++; continue; }
+        if (item.private !== false || !validRepo(item.full_name)) { result.coverage.invalidItems++; continue; }
+        if (seen.has(item.id)) { result.coverage.duplicateItems++; continue; }
         seen.add(item.id);
         result.observations.push(observation('github', {sourceType: 'repository', identity: `github:${item.full_name.toLowerCase()}`,
           canonicalUrl: `https://github.com/${item.full_name}`, title: item.full_name,
@@ -98,7 +104,7 @@ export function createHarness(input = {}, deps = {}) {
           limitations: ['Discovery lead; popularity, search ranking and a search miss do not verify facts or absence.']}, response, now));
         if (result.observations.length >= config.limits.maxResults) break;
       }
-      if (data.items.length > result.observations.length && result.observations.length >= config.limits.maxResults) result.limitations.push('RESULT_LIMIT');
+      if (result.coverage.itemsInspected - inspectedBefore < data.items.length) result.limitations.push('RESULT_LIMIT');
       const link = response.headers.link?.match(/<([^>]+)>;\s*rel="next"/);
       next = link?.[1] || null;
       if (next) {
@@ -110,6 +116,7 @@ export function createHarness(input = {}, deps = {}) {
       }
     }
     if (next) result.limitations.push('PAGINATION_LIMIT');
+    result.coverage.complete = !next && !result.limitations.some(l => /LIMIT|INCOMPLETE|LOOP/.test(l));
     result.limitations.push('Search is bounded and cannot establish comprehensive absence.');
   }
   async function githubRetrieve(options, result) {
@@ -169,24 +176,35 @@ export function createHarness(input = {}, deps = {}) {
     result.feed = {identity: url, updatedAt: feed.updatedAt, etag: response.headers.etag || null,
       lastModified: response.headers['last-modified'] || null, hash: sha256(response.body), totalItems: feed.totalItems};
     result.limitations.push(...feed.limitations);
+    Object.assign(result.coverage, feed.counters, {pagesFetched: 1, complete: feed.counters.itemsInspected === feed.totalItems});
     result.observations = feed.entries.map(entry => observation('rss', {sourceType: 'feed-entry',
       ...entry, revision: entry.hash, limitations: [...entry.limitations, 'Feed publisher claims; linked pages were not fetched.']}, response, now));
     if (feed.limitations.some(x => x !== 'RESULT_LIMIT')) result.status = 'PARTIAL';
   }
   function fixture(options, result) {
+    result.coverage ||= {version: 1, pagesFetched: null, itemsSeen: 0, itemsInspected: 0, duplicateItems: 0,
+      invalidItems: 0, filteredItems: 0, resultCap: config.limits.maxResults, pageCap: config.limits.maxPages, complete: false};
     const data = deps.fixture;
     if (!data || data.version !== 1 || !Array.isArray(data.items) || data.items.length > 1000) fail('INVALID_FIXTURE');
     if (data.error) fail(['TIMEOUT', 'UNAVAILABLE', 'AUTH_ERROR'].includes(data.error) ? data.error : 'INVALID_FIXTURE');
     const seen = new Set();
+    result.coverage.itemsSeen = data.items.length; result.coverage.itemsInspected = data.items.length;
     result.observations = data.items.filter(item => {
-      if (typeof item.id !== 'string' || !item.id || typeof item.content !== 'string' || seen.has(item.id)) return false;
-      seen.add(item.id); return !options.id || item.id === options.id;
+      if (typeof item.id !== 'string' || !item.id || typeof item.content !== 'string') { result.coverage.invalidItems++; return false; }
+      if (seen.has(item.id)) { result.coverage.duplicateItems++; return false; }
+      seen.add(item.id);
+      if (options.id && item.id !== options.id) { result.coverage.filteredItems++; return false; }
+      return true;
     }).slice(0, config.limits.maxResults).map(item => observation('fixture', {sourceType: 'fixture', identity: `fixture:${item.id}`,
       canonicalUrl: `fixture:${item.id}`, title: item.id, content: item.content, revision: sha256(item.content), hash: sha256(item.content),
       limitations: ['Synthetic fixture, not a live source.']}, null, now));
+    result.coverage.complete = seen.size <= config.limits.maxResults && result.coverage.invalidItems === 0;
   }
   async function execute(operation, source, options = {}) {
     const result = initial(source), before = client.requests;
+    result.coverage = {version: 1, pagesFetched: operation === 'discover' || source === 'rss' ? 0 : null,
+      itemsSeen: 0, itemsInspected: 0, duplicateItems: 0, invalidItems: 0, filteredItems: 0,
+      resultCap: config.limits.maxResults, pageCap: config.limits.maxPages, complete: false};
     result.request = {operation, ...Object.fromEntries(['query', 'repo', 'ref', 'file', 'url', 'id']
       .filter(key => typeof options[key] === 'string').map(key => [key, options[key]]))};
     try {
@@ -201,6 +219,7 @@ export function createHarness(input = {}, deps = {}) {
       result.limitations.push(result.status); result.status = 'PARTIAL';
     }
     result.requests = client.requests - before;
+    if (source === 'github' && operation === 'retrieve' && ['OK', 'NOT_MODIFIED'].includes(result.status)) result.coverage.complete = true;
     result.trace = client.trace.slice(-result.requests);
     if (result.requests === 0) result.trace = [];
     return result;
@@ -236,14 +255,15 @@ export function createHarness(input = {}, deps = {}) {
           Object.keys(route).some(k => !['source', 'query', 'url', 'id'].includes(k))) fail('INVALID_ROUTES');
       const result = await execute('discover', route.source, {...route, signal});
       attempts.push({adapter: route.source, status: result.status, count: result.observations.length,
-        request: result.request, trace: result.trace, limitations: result.limitations, requests: result.requests});
+        request: result.request, trace: result.trace, limitations: result.limitations, requests: result.requests, coverage: result.coverage});
       if (result.observations.length) return {...result, attempts,
         requests: attempts.reduce((n, a) => n + a.requests, 0),
         status: attempts.length > 1 || result.status === 'PARTIAL' ? 'PARTIAL' : result.status,
         limitations: [...result.limitations, 'Explicit caller-supplied fallback routes; outputs are not equivalent sources or verified facts.']};
       if (result.status === 'CANCELLED') break;
     }
-    return {version: 1, status: signal?.aborted ? 'CANCELLED' : 'UNAVAILABLE', observations: [], attempts,
+    return {version: 1, adapter: attempts.at(-1).adapter, request: attempts.at(-1).request, coverage: attempts.at(-1).coverage,
+      trace: attempts.flatMap(a => a.trace), status: signal?.aborted ? 'CANCELLED' : 'UNAVAILABLE', observations: [], attempts,
       requests: attempts.reduce((n, a) => n + a.requests, 0), limitations: ['No usable observations in the declared bounded routes. This is not evidence of absence.']};
   }
   // Serialize whole operations as well as network requests so quotas/traces cannot

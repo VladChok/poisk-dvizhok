@@ -17,5 +17,7 @@ memory-state/
 *.sqlite3
 *.sqlite3-*
 /memory-proof.json
+/comparison-proof.json
+/offline-tests.tap
 *.sqlite.*.tmp*
 *.db.*.tmp*

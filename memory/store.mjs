@@ -4,7 +4,8 @@ import os from 'node:os';
 import {createRequire} from 'node:module';
 import {checkSchema as checkJSON} from '../tools/research-map.mjs';
 import {readBundle} from './bundle.mjs';
-import {VERSION, checkSchema, initializeSchema} from './schema.mjs';
+import {initializeSchema} from './schema.mjs';
+import {validateStorage, E3_TABLES} from './schema-v2.mjs';
 import {MemoryError, fail, hash, clean, safePath, relativeFile, readFile, dataPath,
   MAX_INPUT, MAX_FILE, temporary, publishFile, code} from './safety.mjs';
 
@@ -44,9 +45,9 @@ function validateObservation(value) {
 }
 function safeResult(result) {
   clean(result);
-  const known = ['version', 'adapter', 'status', 'observations', 'limitations', 'requests', 'trace', 'request', 'feed', 'attempts'];
+  const known = ['version', 'adapter', 'status', 'observations', 'limitations', 'requests', 'trace', 'request', 'feed', 'attempts', 'coverage'];
   if (!result || Object.keys(result).some(k => !known.includes(k)) || result.version !== 1 ||
-      !['github', 'rss', 'fixture'].includes(result.adapter) || !/^[A-Z_]{1,60}$/.test(result.status) ||
+      !['github', 'rss', 'fixture', 'web'].includes(result.adapter) || (result.adapter === 'web' && result.observations?.length) || !/^[A-Z_]{1,60}$/.test(result.status) ||
       !Array.isArray(result.observations) || result.observations.length > 100 || Buffer.byteLength(json(result)) > MAX_INPUT) fail('INVALID_RUN');
   const allowedRequest = ['operation', 'query', 'repo', 'ref', 'file', 'url', 'id'];
   const request = value => { if (value && (typeof value !== 'object' || Object.entries(value).some(([k, v]) => !allowedRequest.includes(k) || typeof v !== 'string'))) fail('INVALID_RUN'); };
@@ -58,12 +59,19 @@ function safeResult(result) {
       !Number.isInteger(v.bytes) || v.bytes < 0 || v.bytes > MAX_FILE)) fail('INVALID_RUN');
   };
   request(result.request); limitations(result.limitations); trace(result.trace);
+  const coverage = c => {
+    if (c === undefined) return;
+    const counts = ['pagesFetched', 'itemsSeen', 'itemsInspected', 'duplicateItems', 'invalidItems', 'filteredItems', 'resultCap', 'pageCap'];
+    if (!c || c.version !== 1 || typeof c.complete !== 'boolean' || Object.keys(c).some(k => !['version', 'complete', ...counts].includes(k)) ||
+        counts.some(k => c[k] !== null && (!Number.isInteger(c[k]) || c[k] < 0 || c[k] > 100000))) fail('INVALID_RUN');
+  };
+  coverage(result.coverage);
   if (!Number.isInteger(result.requests) || result.requests < 0 || result.requests > 50) fail('INVALID_RUN');
   if (result.attempts !== undefined) {
     if (!Array.isArray(result.attempts) || result.attempts.length > 5) fail('INVALID_RUN');
     for (const attempt of result.attempts) {
-      if (!attempt || Object.keys(attempt).some(k => !['adapter', 'status', 'count', 'request', 'trace', 'limitations', 'requests'].includes(k))) fail('INVALID_RUN');
-      request(attempt.request); trace(attempt.trace); limitations(attempt.limitations);
+      if (!attempt || Object.keys(attempt).some(k => !['adapter', 'status', 'count', 'request', 'trace', 'limitations', 'requests', 'coverage'].includes(k))) fail('INVALID_RUN');
+      request(attempt.request); trace(attempt.trace); limitations(attempt.limitations); coverage(attempt.coverage);
     }
   }
   if (result.feed !== undefined && (result.adapter !== 'rss' || !result.feed || Object.keys(result.feed).some(k =>
@@ -73,16 +81,17 @@ function safeResult(result) {
 }
 
 export class ResearchMemory {
-  constructor(db, file, {scope, write, clock, maxRecords}) {
+  constructor(db, file, {scope, write, clock, maxRecords, supportedVersion = 1}) {
     this.db = db; this.file = file; this.scope = scope; this.write = write;
     this.clock = clock || (() => new Date().toISOString()); this.maxRecords = maxRecords ?? 100000;
+    this.supportedVersion = supportedVersion;
   }
   now() { const at = this.clock(); if (!iso(at)) fail('INVALID_DATE'); return new Date(at).toISOString(); }
   close() { this.db.close(); }
-  migrate() { return {schema: checkSchema(this.db, driver(), this.scope), changed: false}; }
+  migrate() { return {schema: validateStorage(this.db, driver(), this.scope, this.supportedVersion), changed: false}; }
   doctor() {
-    this.migrate();
-    return {status: 'OK', schema: VERSION, scope: this.scope,
+    const {schema} = this.migrate();
+    return {status: 'OK', schema, scope: this.scope,
       sqlite: this.db.prepare('SELECT sqlite_version() AS v').get().v,
       driver: require('better-sqlite3/package.json').version, integrity: 'ok', watch: 'OFF',
       quotas: {logicalBytes: this.db.pragma('page_count', {simple: true}) * this.db.pragma('page_size', {simple: true}),
@@ -93,7 +102,8 @@ export class ResearchMemory {
     if (!this.write) fail('READ_ONLY');
     try { return this.db.transaction(() => {
       const result = fn();
-      for (const table of ['artifacts', 'documents', 'checks', 'runs', 'sources', 'revisions', 'claims', 'bundles', 'map_nodes', 'route_events']) {
+      for (const table of ['artifacts', 'documents', 'checks', 'runs', 'sources', 'revisions', 'claims', 'bundles', 'map_nodes', 'route_events',
+        ...(this.db.pragma('user_version', {simple: true}) === 2 ? E3_TABLES : [])]) {
         if (this.db.prepare(`SELECT count(*) AS n FROM ${table}`).get().n > this.maxRecords) fail('QUOTA');
       }
       return result;
@@ -163,7 +173,7 @@ export class ResearchMemory {
     safeResult(result); if (!iso(at)) fail('INVALID_DATE');
     const id = hash(json([this.scope, brief, key || result]));
     const inputHash = hash(json([result.adapter, result.status, result.request || {}, source, result.observations.map(o =>
-      [o.identity, o.revision, o.hash, o.content, o.title, o.publishedAt, o.updatedAt, o.status])]));
+      [o.identity, o.revision, o.hash, o.content, o.title, o.publishedAt, o.updatedAt, o.status]), ...(result.coverage ? [result.coverage] : [])]));
     return this.transaction(() => {
       const prior = this.db.prepare('SELECT metadata_json FROM runs WHERE id=?').get(id);
       if (prior) {
@@ -290,9 +300,10 @@ export class ResearchMemory {
       await this.db.backup(staged, {progress: () => { if (Date.now() > deadline) fail('BACKUP_TIMEOUT'); return 100; }});
       fs.chmodSync(staged, 0o600);
       const copy = connect(staged, false);
-      try { checkSchema(copy, driver(), this.scope); copy.pragma('journal_mode=DELETE'); if (copy.pragma('integrity_check', {simple: true}) !== 'ok') fail('CORRUPT'); }
+      let schema;
+      try { schema = validateStorage(copy, driver(), this.scope, this.supportedVersion); copy.pragma('journal_mode=DELETE'); if (copy.pragma('integrity_check', {simple: true}) !== 'ok') fail('CORRUPT'); }
       finally { copy.close(); }
-      publishFile(staged, out); return {status: 'OK', schema: VERSION, scope: this.scope};
+      publishFile(staged, out); return {status: 'OK', schema, scope: this.scope};
     } finally { if (fs.existsSync(staged)) fs.unlinkSync(staged); }
   }
   purge({brief, source, before, confirm = false} = {}) {
@@ -321,7 +332,8 @@ export class ResearchMemory {
 }
 
 export function openMemory({dataDir, scope = 'private', write = false, init = false, clock, maxBytes = 256 * 1024 * 1024,
-  maxRecords, timeout = 5000} = {}) {
+  maxRecords, timeout = 5000, supportedVersion = 1} = {}) {
+  if (![1, 2].includes(supportedVersion)) fail('FUTURE_SCHEMA');
   if (!Number.isInteger(maxBytes) || maxBytes < 1048576 || maxBytes > 1073741824 || !Number.isInteger(timeout) || timeout < 0 || timeout > 30000 ||
       (maxRecords !== undefined && (!Number.isInteger(maxRecords) || maxRecords < 1 || maxRecords > 100000))) fail('INVALID_QUOTA');
   const file = dataPath(dataDir, scope); let db, created = false;
@@ -336,12 +348,12 @@ export function openMemory({dataDir, scope = 'private', write = false, init = fa
     } else {
       existingFile(file); db = connect(file, !write, timeout);
       // Validate BEFORE any writes/pragmas that change persistent state.
-      checkSchema(db, driver(), scope); configure(db, write);
+      validateStorage(db, driver(), scope, supportedVersion); configure(db, write);
     }
-    checkSchema(db, driver(), scope);
+    validateStorage(db, driver(), scope, supportedVersion);
     const quota = Number(db.prepare("SELECT value FROM metadata WHERE key='max_bytes'").get().value);
     if (write || init) db.pragma(`max_page_count=${Math.floor(quota / db.pragma('page_size', {simple: true}))}`);
-    return new ResearchMemory(db, file, {scope, write: write || init, clock, maxRecords});
+    return new ResearchMemory(db, file, {scope, write: write || init, clock, maxRecords, supportedVersion});
   } catch (error) {
     db?.close();
     if (created) for (const suffix of ['', '-wal', '-shm']) { try { fs.unlinkSync(file + suffix); } catch {} }
@@ -349,7 +361,7 @@ export function openMemory({dataDir, scope = 'private', write = false, init = fa
     throw new MemoryError(code(error));
   }
 }
-export function restoreMemory(backup, {dataDir, scope = 'private'} = {}) {
+export function restoreMemory(backup, {dataDir, scope = 'private', supportedVersion = 1} = {}) {
   const source = safePath(backup), destination = dataPath(dataDir, scope);
   existingFile(source);
   if (fs.statSync(source).size > 1073741824) fail('INPUT_LIMIT');
@@ -363,14 +375,18 @@ export function restoreMemory(backup, {dataDir, scope = 'private'} = {}) {
     fs.copyFileSync(source, staged, fs.constants.COPYFILE_EXCL); fs.chmodSync(staged, 0o600);
     const db = connect(staged, true);
     try {
-      checkSchema(db, driver(), scope);
+      validateStorage(db, driver(), scope, supportedVersion);
       if (db.pragma('journal_mode', {simple: true}) !== 'delete' || db.pragma('integrity_check', {simple: true}) !== 'ok') fail('CORRUPT');
     } finally { db.close(); }
     fs.mkdirSync(path.dirname(destination), {recursive: true, mode: 0o700});
     const local = temporary(destination);
     try { fs.copyFileSync(staged, local, fs.constants.COPYFILE_EXCL); fs.chmodSync(local, 0o600); publishFile(local, destination); }
     finally { if (fs.existsSync(local)) fs.unlinkSync(local); }
-    return {status: 'OK', schema: VERSION, scope};
+    return {status: 'OK', schema: openMemorySchema(destination, scope, supportedVersion), scope};
   } catch (error) { throw new MemoryError(code(error)); }
   finally { fs.rmSync(scratch, {recursive: true, force: true}); }
+}
+function openMemorySchema(file, scope, supportedVersion) {
+  const db = connect(file, true);
+  try { return validateStorage(db, driver(), scope, supportedVersion); } finally { db.close(); }
 }

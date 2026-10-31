@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-10-31T08:04:37.431Z",
+  "completedAt": "2026-10-31T08:04:47.035Z",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "arch": "x64",
+  "base": "807c14870bfb1ce098ef0295e3f817ba6d02a39d",
+  "shaAtExecution": "807c14870bfb1ce098ef0295e3f817ba6d02a39d",
+  "workingTreeDirty": true,
+  "provenance": "Local pre-commit Windows evidence of the working tree, not final-head CI. Exact-head matrix results/artifacts are linked in the PR description.",
+  "tests": {
+    "baseline": 86,
+    "originalTestsChanged": false,
+    "newE3": 21,
+    "total": 107,
+    "pass": 107,
+    "fail": 0
+  },
+  "watch": "OFF",
+  "commands": [
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap",
+      "stdoutFile": "OFFLINE-WINDOWS.tap",
+      "stderr": "",
+      "exitCode": 0
+    },
+    {
+      "command": "node tools/memory-proof.mjs",
+      "stdoutFile": "MEMORY-WINDOWS.json",
+      "stderr": "",
+      "exitCode": 0
+    },
+    {
+      "command": "node tools/comparison-proof.mjs",
+      "stdoutFile": "COMPARISON-WINDOWS.json",
+      "stderr": "",
+      "exitCode": 0
+    }
+  ]
+}

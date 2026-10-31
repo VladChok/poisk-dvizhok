@@ -3,7 +3,8 @@
 Date: 2026-10-31. E0 decision implemented; the original E1–E4 interface plan below
 is retained as context. E1 is now implemented separately under issue #4; see the
 [E1 addendum](ADR-E1-SOURCE-HARNESS.md). E2 is separately implemented under issue #6;
-see [E2 ADR](ADR-E2-MEMORY.md). E3/E4 remain planned, not operational.
+see [E2 ADR](ADR-E2-MEMORY.md). E3 is separately implemented under issue #8;
+see [E3 ADR](ADR-E3-COMPARISON.md). E4 remains planned, WATCH OFF.
 Task: RESEARCH-ENGINE-CLAUDE-E0-E4-20261031, issue #2.
 
 ## Runtime and dependency decision
