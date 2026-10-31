@@ -34,6 +34,7 @@ jobs:
       - run: node tools/run-offline.mjs --test-reporter=tap > offline-tests.tap
       - run: node tools/memory-proof.mjs > memory-proof.json
       - run: node tools/comparison-proof.mjs > comparison-proof.json
+      - run: node tools/verify-runtime-proofs.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: research-proofs-${{ matrix.os }}-node-${{ matrix.node }}

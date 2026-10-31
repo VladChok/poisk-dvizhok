@@ -75,6 +75,9 @@ Hosted workflow checks out the actual PR head, installs/rebuilds the native driv
 runs all107 tests plus both fresh-process proofs on **ubuntu-latest + windows-2022
 × Node20/22/24**, and uploads full TAP + both JSON proofs in each job. See final
 PR CI results before asserting matrix PASS. Windows Node20 retains VS2022/Python3.12
+source-build path. `tools/verify-runtime-proofs.mjs` additionally verifies the TAP
+count and clean exact-head SHA in both proofs and prints the runtime summary into
+each job log. Windows Node20 retains VS2022/Python3.12
 source-build path; arbitrary stock Windows/Node20 native setup is not implied.
 
 ## Compatibility, rollback and limits
@@ -105,7 +108,7 @@ notifications, private-account ingestion, live monitoring or WATCH activation.
 
 Analysis: `analysis/{records,store}.mjs`, `analysis/README.md`.
 Schema: new `memory/{schema-v2,migrate}.mjs`; existing `memory/store.mjs` and README.
-CLI/proof: new `tools/{research-analysis,comparison-proof}.mjs`; delegation in
+CLI/proof: new `tools/{research-analysis,comparison-proof,verify-runtime-proofs}.mjs`; delegation in
 `tools/research-engine.mjs`; explicit v2 support in `tools/research-memory.mjs`.
 Coverage instrumentation: `harness/{engine,feed}.mjs`. Tests: new
 `tests/analysis.test.mjs`; no edits to previous test files. CI/ignore:
