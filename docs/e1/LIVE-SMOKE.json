@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "startedAt": "2026-10-31T02:55:21.080Z",
+  "completedAt": "2026-10-31T02:55:29.355Z",
+  "elapsedMs": 8275,
+  "node": "v24.19.0",
+  "platform": "win32",
+  "auth": "explicitly unauthenticated; no env token used",
+  "runs": [
+    {
+      "name": "github-discover",
+      "status": "OK",
+      "elapsedMs": 502,
+      "requests": 1,
+      "trace": [
+        {
+          "host": "api.github.com",
+          "status": 200,
+          "bytes": 5281
+        }
+      ],
+      "limitations": [
+        "Search is bounded and cannot establish comprehensive absence."
+      ],
+      "observations": [
+        {
+          "identity": "github:vladchok/poisk-dvizhok",
+          "canonicalUrl": "https://github.com/VladChok/poisk-dvizhok",
+          "observedAt": "2026-10-31T02:55:21.585Z",
+          "publishedAt": "2026-09-26T08:31:52.000Z",
+          "updatedAt": "2026-09-26T16:50:40.000Z",
+          "revision": null,
+          "etag": null,
+          "lastModified": null,
+          "hash": "c9ae21508f3966606a8df6d3d049aae6184a25db94e2280174e093018ec9b9c4",
+          "status": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "name": "github-commit",
+      "status": "OK",
+      "elapsedMs": 2108,
+      "requests": 2,
+      "trace": [
+        {
+          "host": "api.github.com",
+          "status": 200,
+          "bytes": 5278
+        },
+        {
+          "host": "api.github.com",
+          "status": 200,
+          "bytes": 76973
+        }
+      ],
+      "limitations": [],
+      "observations": [
+        {
+          "identity": "github:vladchok/poisk-dvizhok:e9ef2b87cdb62ec8fa00d5774cd78a91b215915f:",
+          "canonicalUrl": "https://github.com/VladChok/poisk-dvizhok/commit/e9ef2b87cdb62ec8fa00d5774cd78a91b215915f",
+          "observedAt": "2026-10-31T02:55:23.692Z",
+          "publishedAt": "2026-10-31T02:33:19.000Z",
+          "updatedAt": null,
+          "revision": "e9ef2b87cdb62ec8fa00d5774cd78a91b215915f",
+          "etag": "W/\"c54844eb250cd8fd66566e67537bbbd5545fc5d2ef1df829241cbaedfdb24d1d\"",
+          "lastModified": "Sat, 31 Oct 2026 02:33:19 GMT",
+          "hash": "b62461ee9da0557985f514a15fb3e8b1112edc7efe774f68b5b27edfad412916",
+          "status": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "name": "github-file",
+      "status": "OK",
+      "elapsedMs": 1836,
+      "requests": 2,
+      "trace": [
+        {
+          "host": "api.github.com",
+          "status": 200,
+          "bytes": 5278
+        },
+        {
+          "host": "api.github.com",
+          "status": 200,
+          "bytes": 7978
+        }
+      ],
+      "limitations": [],
+      "observations": [
+        {
+          "identity": "github:vladchok/poisk-dvizhok:e9ef2b87cdb62ec8fa00d5774cd78a91b215915f:README.md",
+          "canonicalUrl": "https://github.com/VladChok/poisk-dvizhok/blob/e9ef2b87cdb62ec8fa00d5774cd78a91b215915f/README.md",
+          "observedAt": "2026-10-31T02:55:25.529Z",
+          "publishedAt": null,
+          "updatedAt": null,
+          "revision": "e9ef2b87cdb62ec8fa00d5774cd78a91b215915f",
+          "etag": "\"ab3fd826f282c0668e1152b019cccb846b6b10e1\"",
+          "lastModified": "Sat, 31 Oct 2026 02:33:19 GMT",
+          "hash": "68b145c8079e92bb1878d3cad5d985b73fab15472ce7618ee3355f3ed9794112",
+          "status": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "name": "github-file-conditional",
+      "status": "NOT_MODIFIED",
+      "elapsedMs": 1819,
+      "requests": 2,
+      "trace": [
+        {
+          "host": "api.github.com",
+          "status": 200,
+          "bytes": 5278
+        },
+        {
+          "host": "api.github.com",
+          "status": 304,
+          "bytes": 0
+        }
+      ],
+      "limitations": [],
+      "observations": [
+        {
+          "identity": "github:vladchok/poisk-dvizhok:e9ef2b87cdb62ec8fa00d5774cd78a91b215915f:README.md",
+          "canonicalUrl": "https://github.com/VladChok/poisk-dvizhok/blob/e9ef2b87cdb62ec8fa00d5774cd78a91b215915f/README.md",
+          "observedAt": "2026-10-31T02:55:27.348Z",
+          "publishedAt": null,
+          "updatedAt": null,
+          "revision": "e9ef2b87cdb62ec8fa00d5774cd78a91b215915f",
+          "etag": "\"ab3fd826f282c0668e1152b019cccb846b6b10e1\"",
+          "lastModified": "Sat, 31 Oct 2026 02:33:19 GMT",
+          "hash": null,
+          "status": "NOT_MODIFIED"
+        }
+      ]
+    },
+    {
+      "name": "rss-declared-feed",
+      "status": "OK",
+      "elapsedMs": 1304,
+      "requests": 1,
+      "trace": [
+        {
+          "host": "github.blog",
+          "status": 200,
+          "bytes": 509307
+        }
+      ],
+      "limitations": [
+        "RESULT_LIMIT"
+      ],
+      "feed": {
+        "identity": "https://github.blog/feed/",
+        "updatedAt": "2026-10-28T17:38:44.000Z",
+        "etag": "\"669a08bcef252d75f755446b35e91180\"",
+        "lastModified": "Fri, 30 Oct 2026 17:52:27 GMT",
+        "hash": "e89a7257fee997ae54c4798d303c5c205e4a7e232c4edc32938998d148b9730e",
+        "totalItems": 10
+      },
+      "observations": [
+        {
+          "identity": "https://github.blog/feed/#entry=https%3A%2F%2Fgithub.blog%2F%3Fp%3D99788",
+          "canonicalUrl": "https://github.blog/news-insights/company-news/github-universe-2026-evolving-every-layer-of-the-stack/",
+          "observedAt": "2026-10-31T02:55:28.652Z",
+          "publishedAt": "2026-10-28T16:09:28.000Z",
+          "updatedAt": null,
+          "revision": "c148c0c0a8c35dcee7f20ca00fabd5de3d6e8df538125c8d708d450dc923e0ff",
+          "etag": "\"669a08bcef252d75f755446b35e91180\"",
+          "lastModified": "Fri, 30 Oct 2026 17:52:27 GMT",
+          "hash": "c148c0c0a8c35dcee7f20ca00fabd5de3d6e8df538125c8d708d450dc923e0ff",
+          "status": "OBSERVED"
+        },
+        {
+          "identity": "https://github.blog/feed/#entry=https%3A%2F%2Fgithub.blog%2F%3Fp%3D99742",
+          "canonicalUrl": "https://github.blog/news-insights/octoverse/octoverse-commits-pushes-reach-new-highs-in-2026-as-developers-build-with-agents/",
+          "observedAt": "2026-10-31T02:55:28.652Z",
+          "publishedAt": "2026-10-28T16:07:40.000Z",
+          "updatedAt": null,
+          "revision": "25898960b08ef19d8e0a5485f6719fcd78639a3300fb3633362654b6ef17141b",
+          "etag": "\"669a08bcef252d75f755446b35e91180\"",
+          "lastModified": "Fri, 30 Oct 2026 17:52:27 GMT",
+          "hash": "25898960b08ef19d8e0a5485f6719fcd78639a3300fb3633362654b6ef17141b",
+          "status": "OBSERVED"
+        },
+        {
+          "identity": "https://github.blog/feed/#entry=https%3A%2F%2Fgithub.blog%2F%3Fp%3D99645",
+          "canonicalUrl": "https://github.blog/security/how-bug-bounty-sharpens-one-researchers-security-skills/",
+          "observedAt": "2026-10-31T02:55:28.652Z",
+          "publishedAt": "2026-10-22T17:21:30.000Z",
+          "updatedAt": null,
+          "revision": "7efcebd2e632523782e9170764313841f6b54561d10cb607ad5fbd562ff8a472",
+          "etag": "\"669a08bcef252d75f755446b35e91180\"",
+          "lastModified": "Fri, 30 Oct 2026 17:52:27 GMT",
+          "hash": "7efcebd2e632523782e9170764313841f6b54561d10cb607ad5fbd562ff8a472",
+          "status": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "name": "rss-conditional",
+      "status": "NOT_MODIFIED",
+      "elapsedMs": 703,
+      "requests": 1,
+      "trace": [
+        {
+          "host": "github.blog",
+          "status": 304,
+          "bytes": 0
+        }
+      ],
+      "limitations": [],
+      "observations": [
+        {
+          "identity": "https://github.blog/feed/",
+          "canonicalUrl": "https://github.blog/feed/",
+          "observedAt": "2026-10-31T02:55:29.355Z",
+          "publishedAt": null,
+          "updatedAt": null,
+          "revision": null,
+          "etag": "\"669a08bcef252d75f755446b35e91180\"",
+          "lastModified": "Fri, 30 Oct 2026 17:52:27 GMT",
+          "hash": null,
+          "status": "NOT_MODIFIED"
+        }
+      ]
+    }
+  ]
+}

@@ -18,4 +18,5 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --version
+      - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: node tools/run-offline.mjs

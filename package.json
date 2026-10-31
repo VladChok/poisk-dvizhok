@@ -1,0 +1,11 @@
+{
+  "name": "poisk-dvizhok",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "test": "node tools/run-offline.mjs" },
+  "dependencies": {
+    "ipaddr.js": "2.2.0",
+    "saxes": "6.0.0"
+  }
+}

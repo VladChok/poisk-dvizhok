@@ -19,7 +19,7 @@ RESEARCH ENGINE
 └── LEGEND
 ```
 
-This repository contains bootstrap context **plus a Map/Evidence v0 contract, JSON schemas and a source-level CLI implementation** for validating, rendering and saving research maps. It does **not** yet provide a complete operational research engine: no bundled source adapters, automatic source verification, durable memory service, background monitoring, or frozen full architecture. The CLI's presence does not by itself prove runtime success in an arbitrary executor environment.
+This repository contains a Map/Evidence v0 contract, schemas, validation/render/save CLI, an E0 research proof and a manual E1 Source Harness with GitHub REST, RSS/Atom and offline fixtures. It does **not** yet provide automatic source verification, a durable memory service or background monitoring. See [Source Harness setup and limits](harness/README.md) and the [E1 execution report](docs/e1/REPORT.md).
 
 ## Why it exists
 
@@ -37,7 +37,7 @@ The purpose of the engine is to make those foundations shared and durable instea
 ## Bootstrap parts
 
 - **METHOD** — the structure of a research assignment and its result. See [RESEARCH-METHOD.md](RESEARCH-METHOD.md).
-- **SOURCE HARNESS** — mechanisms that let an agent reach and inspect sources. See [harness/README.md](harness/README.md).
+- **SOURCE HARNESS E1** — manual, bounded GitHub REST and configured RSS/Atom access with doctor, provenance and fixtures. See [harness/README.md](harness/README.md).
 - **EVIDENCE** — material and provenance supporting a research conclusion. See [research/README.md](research/README.md).
 - **MEMORY** — prior findings, known sources, limitations, and open questions. See [memory/README.md](memory/README.md).
 - **LEGEND** — shared research terms when real work establishes a need for them. See [LEGEND.md](LEGEND.md).
@@ -67,8 +67,9 @@ The test wrapper blocks Node network APIs in tests and inherited subprocesses.
 The inspector verifies v0 structure, source coverage and snapshot hashes; it does
 not verify factual truth. See the [recorded execution](research/e0-node-sqlite/EXECUTION.json),
 [independent review gate](research/e0-node-sqlite/REVIEW-GATE.md) and
-[staged ADR](docs/ADR-ENGINE-E0-E4.md). This E0 proof does not implement source
-adapters, a memory service or WATCH. Independent review remains pending.
+[staged ADR](docs/ADR-ENGINE-E0-E4.md). E1 access is a separate stage; E2 memory
+and E4 WATCH remain unimplemented. E0's independent source/hash review passed;
+independent reviewer CLI execution remains HOLD.
 
 The Agent Reach source-first review and Map/Evidence contract work are documented. The next operational gate is a **real bounded research probe with a second-executor handoff** using the existing contract and CLI, as described in [SEARCHER integration](docs/SEARCHER-INTEGRATION-v0.md). Do not describe source adapters, automated access, memory or monitoring as working until independently tested and reviewed.
 

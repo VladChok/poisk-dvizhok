@@ -1,7 +1,9 @@
 # ADR: staged Research Engine implementation
 
-Date: 2026-10-31. E0 decision implemented; E1–E4 interfaces below are planned,
-not operational features. Task: RESEARCH-ENGINE-CLAUDE-E0-E4-20261031, issue #2.
+Date: 2026-10-31. E0 decision implemented; the original E1–E4 interface plan below
+is retained as context. E1 is now implemented separately under issue #4; see the
+[E1 addendum](ADR-E1-SOURCE-HARNESS.md). E2–E4 remain planned, not operational.
+Task: RESEARCH-ENGINE-CLAUDE-E0-E4-20261031, issue #2.
 
 ## Runtime and dependency decision
 Keep the existing Node ESM CLI and node:test. E0 introduces no npm dependencies,
