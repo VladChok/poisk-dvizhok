@@ -19,7 +19,7 @@ RESEARCH ENGINE
 └── LEGEND
 ```
 
-This repository currently contains only the bootstrap context and empty working areas. It does not yet provide a working research engine, source adapters, automated verification, or a frozen architecture.
+This repository contains bootstrap context **plus a Map/Evidence v0 contract, JSON schemas and a source-level CLI implementation** for validating, rendering and saving research maps. It does **not** yet provide a complete operational research engine: no bundled source adapters, automatic source verification, durable memory service, background monitoring, or frozen full architecture. The CLI's presence does not by itself prove runtime success in an arbitrary executor environment.
 
 ## Why it exists
 
@@ -42,6 +42,7 @@ The purpose of the engine is to make those foundations shared and durable instea
 - **MEMORY** — prior findings, known sources, limitations, and open questions. See [memory/README.md](memory/README.md).
 - **LEGEND** — shared research terms when real work establishes a need for them. See [LEGEND.md](LEGEND.md).
 - **MAP / EVIDENCE CONTRACT v0** — frozen shape of `map.json` and `evidence.jsonl`: [contract](docs/CONTRACT-research-map-evidence-v0.md), [schemas](schema/), CLI `node tools/research-map.mjs validate | validate-evidence | render | save`.
+- **SEARCHER INTEGRATION v0 (proposed, docs only)** — [operating boundary and E0 proof gate](docs/SEARCHER-INTEGRATION-v0.md). SEARCHER is a **role consuming** the engine; this document does not install a skill, run a worker or add source adapters.
 
 The current architectural hypothesis is recorded in [Architecture notes](docs/ARCHITECTURE-NOTES.md).
 
@@ -53,18 +54,20 @@ No upstream code has been imported. The current direction is to treat Agent Reac
 
 ## Next review
 
-The Agent Reach source-first review is complete. The next step is a bounded architecture review against the current Research / News workflow and the first real research probe before Research Engine v0 is designed.
+The Agent Reach source-first review and Map/Evidence contract work are documented. The next operational gate is a **real bounded research probe with a second-executor handoff** using the existing contract and CLI, as described in [SEARCHER integration](docs/SEARCHER-INTEGRATION-v0.md). Do not describe source adapters, automated access, memory or monitoring as working until independently tested and reviewed.
 
 ```text
-SOURCE REVIEW ✅
+SOURCE REVIEW (documented)
       ↓
-ROLE / ENGINE / EVIDENCE BOUNDARY
+MAP / EVIDENCE CONTRACT v0 (source exists)
       ↓
-ONE REAL RESEARCH TASK
+SEARCHER ROLE / ENGINE BOUNDARY (documented)
       ↓
-EVIDENCE FROM USE
+ONE AUTHORIZED REAL RESEARCH TASK + CLI EVIDENCE
       ↓
-RESEARCH ENGINE v0
+SECOND-EXECUTOR RESUME + REVIEW
+      ↓
+RESEARCH ENGINE OPERATIONAL CLAIM (only if proven)
 ```
 
 Until that bounded review and real probe happen, this repository remains evidence and scaffolding—not an answer disguised as a frozen architecture.
