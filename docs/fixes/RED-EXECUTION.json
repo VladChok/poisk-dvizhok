@@ -1,0 +1,51 @@
+{
+  "observedAt": "2026-10-31T12:58:47.385Z",
+  "head": "8208567e1ae7b30e0ae0e02ea8ad0f7c86774a3c",
+  "productionDiff": "",
+  "workingTreeContainsUntrackedTests": true,
+  "node": "v24.19.0",
+  "platform": "win32",
+  "localReviewInputs": [
+    {
+      "file": "FRIDAY-REVIEW.md",
+      "sha256": "0f76fc713d413e3cf1f5776a3768d5e9d1188cdd63e9e6ddfb7d971504cfb616"
+    },
+    {
+      "file": "FRIDAY-MERGE-PLAN.md",
+      "sha256": "77e93e27d021283d8bf0120de18d55ba990f568eb87ee447aa6acaaaa968a590"
+    },
+    {
+      "file": "friday-adversarial.test.mjs",
+      "sha256": "03b5759575b1d93c1dacbe37bba052bf49ffe2967318b528c257fcb12337f183"
+    }
+  ],
+  "commands": [
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap docs/fixes/FRIDAY-ORIGINAL-PROBES.mjs",
+      "exitCode": 1,
+      "tests": 3,
+      "pass": 0,
+      "fail": 3,
+      "stdoutFile": "RED-ORIGINAL.tap"
+    },
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap tests/friday-regressions.test.mjs",
+      "exitCode": 1,
+      "tests": 3,
+      "pass": 0,
+      "fail": 3,
+      "stdoutFile": "RED-REGRESSIONS.tap"
+    },
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap tests/analysis.test.mjs tests/harness.test.mjs tests/memory.test.mjs tests/research-bundle.test.mjs tests/research-map.test.mjs tests/watch.test.mjs",
+      "exitCode": 0,
+      "tests": 130,
+      "pass": 130,
+      "fail": 0,
+      "stdoutFile": "BASELINE-130.tap",
+      "stderr": ""
+    }
+  ],
+  "note": "Original probe fixtures and acceptance assertions preserved. Only imports/evidence destination made portable; original diagnostic notEqual lives in the original snapshot. Permanent regressions require the fixed capture to equal the control after the unchanged original acceptance assertion.",
+  "watch": "OFF"
+}
