@@ -14,9 +14,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: node --version
       - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm rebuild better-sqlite3 --ignore-scripts=false
       - run: node tools/run-offline.mjs
+      - run: node tools/memory-proof.mjs > memory-proof.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: memory-proof-${{ matrix.os }}-node-${{ matrix.node }}
+          path: memory-proof.json

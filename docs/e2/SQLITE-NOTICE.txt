@@ -1,0 +1,7 @@
+SQLite bundled by better-sqlite3@12.11.1 reports version 3.53.2 on the tested
+Windows x64 runtime. Its installed amalgamation states that the author disclaims
+copyright to that source code. SQLite is distributed as public-domain software.
+The Node binding itself is MIT licensed; its copyright/permission notice and all
+locked dependency notices are retained in THIRD-PARTY-NOTICES.txt.
+
+Upstream reference: https://www.sqlite.org/copyright.html
