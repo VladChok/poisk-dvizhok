@@ -11,8 +11,8 @@ node tools/research-memory.mjs init [--data-dir path] [--scope private|public]
 node tools/research-memory.mjs import <bundle-dir> [--data-dir path]
 node tools/research-memory.mjs ingest --source fixture|github|rss [E1 options] [--data-dir path]
 node tools/research-memory.mjs ingest --input <saved-E1-result.json> [--key id]
-node tools/research-memory.mjs find [--query term] [--source id] [--brief id] [--claim id] [--from UTC] [--to UTC]
-node tools/research-memory.mjs show|history [--source id | --brief id]
+node tools/research-memory.mjs find [--query term] [--source id] [--brief id] [--claim id] [--from UTC] [--to UTC] [--limit N --offset N]
+node tools/research-memory.mjs show|history [--source id | --brief id] [--limit N --offset N]
 node tools/research-memory.mjs export <brief-id> --out <new-directory-with-brief-slug> [--bundle version-id] [--allow-private]
 node tools/research-memory.mjs backup --out <new.sqlite>
 node tools/research-memory.mjs restore --from <backup.sqlite> --data-dir <new-root>
@@ -26,7 +26,7 @@ Ingest: --config file --fixture file --operation discover|retrieve --query text
 init: --max-bytes number (default 268435456; max 1073741824).
 Local reads/doctor never initialize. Init is explicit. Restore never overwrites.
 Exit: 0 success; 1 data/driver/acquisition failure or partial; 2 usage; 130 cancelled.`;
-const values = new Set(['data-dir', 'scope', 'query', 'source', 'source-id', 'brief', 'claim', 'from', 'to', 'out', 'input',
+const values = new Set(['data-dir', 'scope', 'query', 'source', 'source-id', 'brief', 'claim', 'from', 'to', 'out', 'input', 'offset',
   'key', 'bundle', 'config', 'fixture', 'operation', 'repo', 'ref', 'file', 'url', 'etag', 'last-modified', 'run', 'state', 'reason', 'before', 'limit', 'max-bytes']);
 const booleans = new Set(['json', 'confirm', 'allow-private']);
 export async function main(args) {
@@ -63,8 +63,9 @@ export async function main(args) {
       else if (command === 'import') result = memory.importBundle(positional[0]);
       else if (command === 'find') result = {matches: memory.find({query: options.query, source: options.source,
         brief: options.brief, claim: options.claim, from: options.from, to: options.to,
-        ...(options.limit ? {limit: Number(options.limit)} : {})})};
-      else if (['show', 'history'].includes(command)) result = memory.getHistory({source: options.source, brief: options.brief});
+        ...(options.limit ? {limit: Number(options.limit)} : {}), ...(options.offset ? {offset: Number(options.offset)} : {})})};
+      else if (['show', 'history'].includes(command)) result = memory.getHistory({source: options.source, brief: options.brief,
+        ...(options.limit ? {limit: Number(options.limit)} : {}), ...(options.offset ? {offset: Number(options.offset)} : {})});
       else if (command === 'export') result = memory.exportBundle(positional[0], options.out, {bundle: options.bundle, allowPrivate: options['allow-private']});
       else if (command === 'backup') result = await memory.backup(options.out);
       else if (command === 'route') result = memory.route(options.run, options.state, options.reason);

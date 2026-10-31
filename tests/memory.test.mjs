@@ -329,6 +329,22 @@ test('retention is explicit and keeps last good baseline/latest check', async t 
   assert.equal(source.checks.length, 1); assert.equal(source.revisions[0].content, item.content);
 });
 
+test('search/history paginate deterministically and date search includes later 304 checks', async t => {
+  const {memory, dataDir} = store(t);
+  const item = await observed('Повторяемая запись'); const ref = memory.storeObservation(item);
+  const checkedAt = '2026-10-31T01:00:00.000Z';
+  memory.storeObservation({...item, status: 'NOT_MODIFIED', content: null, hash: null, observedAt: checkedAt});
+  memory.storeObservation(await observed('Новая запись', {observedAt: '2026-10-31T02:00:00.000Z'}));
+  assert.equal(memory.find({query: 'Повторяемая', from: checkedAt, to: checkedAt}).length, 1);
+  const first = memory.find({limit: 1, offset: 0}), next = memory.find({limit: 1, offset: 1});
+  assert.notEqual(first[0].entity_id, next[0].entity_id);
+  const history = memory.getHistory({source: ref.source, limit: 1, offset: 1});
+  assert.equal(history.sources[0].checks[0].observed_at, checkedAt);
+  assert.equal(history.sources[0].revisions[0].content, 'Новая запись');
+  const result = cli(dataDir, 'history', '--source', ref.source, '--limit', '1', '--offset', '1');
+  assert.equal(result.status, 0); assert.equal(JSON.parse(result.stdout).sources[0].checks[0].observed_at, checkedAt);
+});
+
 test('separate writer processes serialize; a held lock yields bounded BUSY; process crash rolls back', async t => {
   const {dataDir, memory} = store(t); memory.close();
   const processRun = index => new Promise((resolve, reject) => {

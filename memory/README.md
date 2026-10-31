@@ -97,7 +97,11 @@ node tools/research-memory.mjs ingest --input <saved-E1-result.json> --key <run-
 
 No live ingest is part of automated tests/proof. Search supports `--query`,
 `--source` (stable DB ID, identity or locator), `--brief`, `--claim`, `--from`, `--to`
-and `--limit` (1–100). Dates are full UTC timestamps. FTS5 uses Unicode61 tokens
+and `--limit` (1–100), `--offset` (0–100000). History accepts limit (1–1000) and
+offset for bounded pages; with --source it pages each event/revision collection,
+without --source it pages source identities. Dates are full UTC timestamps and
+match import time or an observation's original/later check time, including 304.
+FTS5 uses Unicode61 tokens
 including Cyrillic; token matching is literal AND, without stemming or semantic
 ranking. Results use stable insertion order and include historical records.
 History exposes revisions, checks, original provenance and run associations.

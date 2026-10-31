@@ -30,6 +30,7 @@ E3 semantic ranking or E4 watch definitions/scheduler are implemented. WATCH OFF
   3.53.2 and FTS5 observed. Node >=20 minimum retained, not inferred from E0 docs.
 - Clean E2 installation/native rebuild and exact exit codes: [INSTALL.txt](INSTALL.txt).
 - Full offline tests and repeated E0/E1 baseline: [EXECUTION.json](EXECUTION.json).
+  Final local suite: 86/86 PASS, exit 0 (69 unchanged E0/E1 + 17 E2 tests).
 - Real Windows fresh-process proof: [DURABILITY-WINDOWS.json](DURABILITY-WINDOWS.json).
   It creates/closes/reopens SQLite through 19 separate processes, queries Cyrillic,
   verifies stable history, restores backup and compares v0/snapshot byte hashes.

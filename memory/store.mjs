@@ -206,8 +206,8 @@ export class ResearchMemory {
       return {id, run, state};
     });
   }
-  find({query, source, brief, claim, from, to, limit = 50} = {}) {
-    if (!Number.isInteger(limit) || limit < 1 || limit > 100 || (from && !iso(from)) || (to && !iso(to))) fail('INVALID_QUERY');
+  find({query, source, brief, claim, from, to, limit = 50, offset = 0} = {}) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0 || offset > 100000 || (from && !iso(from)) || (to && !iso(to))) fail('INVALID_QUERY');
     const conditions = [], args = [];
     if (query !== undefined) {
       if (typeof query !== 'string' || query.length > 2000) fail('INVALID_QUERY');
@@ -219,24 +219,33 @@ export class ResearchMemory {
     if (brief) { conditions.push("(d.brief_id=? OR (d.kind='observation' AND d.entity_id IN (SELECT c.revision_id FROM checks c JOIN runs r ON r.id=c.run_id WHERE r.brief_id=?)))"); args.push(brief, brief); }
     if (claim) { conditions.push('d.claim_id=?'); args.push(claim); }
     if (source) { conditions.push('d.source_id IN (SELECT id FROM sources WHERE id=? OR identity=? OR locator=?)'); args.push(source, source, source); }
-    if (from) { conditions.push('d.at>=?'); args.push(new Date(from).toISOString()); }
-    if (to) { conditions.push('d.at<=?'); args.push(new Date(to).toISOString()); }
-    return this.db.prepare(`SELECT d.* FROM documents d ${conditions.length ? 'WHERE ' + conditions.join(' AND ') : ''} ORDER BY d.id LIMIT ?`).all(...args, limit);
+    if (from || to) {
+      const bounds = [], dates = [];
+      if (from) { bounds.push('>=?'); dates.push(new Date(from).toISOString()); }
+      if (to) { bounds.push('<=?'); dates.push(new Date(to).toISOString()); }
+      conditions.push(`((${bounds.map(b => 'd.at' + b).join(' AND ')}) OR (d.kind='observation' AND EXISTS
+        (SELECT 1 FROM checks c WHERE c.revision_id=d.entity_id AND ${bounds.map(b => 'c.observed_at' + b).join(' AND ')})))`);
+      args.push(...dates, ...dates);
+    }
+    return this.db.prepare(`SELECT d.* FROM documents d ${conditions.length ? 'WHERE ' + conditions.join(' AND ') : ''} ORDER BY d.id LIMIT ? OFFSET ?`).all(...args, limit, offset);
   }
-  getHistory({source, brief, limit = 100} = {}) {
-    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) fail('INVALID_QUERY');
+  getHistory({source, brief, limit = 100, offset = 0} = {}) {
+    if (!Number.isInteger(limit) || limit < 1 || limit > 1000 || !Number.isInteger(offset) || offset < 0 || offset > 100000) fail('INVALID_QUERY');
     if (brief) return {
-      brief, bundles: this.db.prepare('SELECT id,imported_at FROM bundles WHERE brief_id=? ORDER BY rowid LIMIT ?').all(brief, limit),
-      claims: this.db.prepare('SELECT c.* FROM claims c JOIN bundles b ON b.id=c.bundle_id WHERE b.brief_id=? ORDER BY c.rowid LIMIT ?').all(brief, limit),
-      runs: this.db.prepare('SELECT * FROM runs WHERE brief_id=? ORDER BY rowid LIMIT ?').all(brief, limit)
+      brief, page: {limit, offset}, bundles: this.db.prepare('SELECT id,imported_at FROM bundles WHERE brief_id=? ORDER BY rowid LIMIT ? OFFSET ?').all(brief, limit, offset),
+      claims: this.db.prepare('SELECT c.* FROM claims c JOIN bundles b ON b.id=c.bundle_id WHERE b.brief_id=? ORDER BY c.rowid LIMIT ? OFFSET ?').all(brief, limit, offset),
+      runs: this.db.prepare('SELECT * FROM runs WHERE brief_id=? ORDER BY rowid LIMIT ? OFFSET ?').all(brief, limit, offset),
+      routeEvents: this.db.prepare('SELECT e.* FROM route_events e JOIN runs r ON r.id=e.run_id WHERE r.brief_id=? ORDER BY e.rowid LIMIT ? OFFSET ?').all(brief, limit, offset)
     };
     const rows = source ? this.db.prepare('SELECT * FROM sources WHERE id=? OR identity=? OR locator=? LIMIT ?').all(source, source, source, limit) :
-      this.db.prepare('SELECT * FROM sources ORDER BY rowid LIMIT ?').all(limit);
-    return {sources: rows.map(item => ({...item,
-      revisions: this.db.prepare('SELECT * FROM revisions WHERE source_id=? ORDER BY rowid LIMIT ?').all(item.id, limit),
-      checks: this.db.prepare('SELECT * FROM checks WHERE source_id=? ORDER BY observed_at,rowid LIMIT ?').all(item.id, limit),
-      runs: this.db.prepare('SELECT r.* FROM runs r JOIN run_sources s ON s.run_id=r.id WHERE s.source_id=? ORDER BY r.rowid LIMIT ?').all(item.id, limit)})),
-      routeEvents: this.db.prepare('SELECT * FROM route_events ORDER BY rowid LIMIT ?').all(limit)};
+      this.db.prepare('SELECT * FROM sources ORDER BY rowid LIMIT ? OFFSET ?').all(limit, offset);
+    const eventsOffset = source ? offset : 0;
+    return {page: {limit, offset, mode: source ? 'events' : 'sources'}, sources: rows.map(item => ({...item,
+      revisions: this.db.prepare('SELECT * FROM revisions WHERE source_id=? ORDER BY rowid LIMIT ? OFFSET ?').all(item.id, limit, eventsOffset),
+      checks: this.db.prepare('SELECT * FROM checks WHERE source_id=? ORDER BY observed_at,rowid LIMIT ? OFFSET ?').all(item.id, limit, eventsOffset),
+      runs: this.db.prepare('SELECT r.* FROM runs r JOIN run_sources s ON s.run_id=r.id WHERE s.source_id=? ORDER BY r.rowid LIMIT ? OFFSET ?').all(item.id, limit, eventsOffset)})),
+      routeEvents: source ? this.db.prepare('SELECT DISTINCT e.* FROM route_events e JOIN run_sources s ON s.run_id=e.run_id JOIN sources src ON src.id=s.source_id WHERE src.id=? OR src.identity=? OR src.locator=? ORDER BY e.rowid LIMIT ? OFFSET ?').all(source, source, source, limit, offset) :
+        this.db.prepare('SELECT * FROM route_events ORDER BY rowid LIMIT ? OFFSET ?').all(limit, offset)};
   }
   exportBundle(brief, output, {bundle: version, allowPrivate = false} = {}) {
     if (this.scope === 'private' && !allowPrivate) fail('PRIVATE_EXPORT_REQUIRED');
