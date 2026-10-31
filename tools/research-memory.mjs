@@ -50,7 +50,7 @@ export async function main(args) {
     if (command === 'ingest' && (!options.input === !options.source)) throw new Error();
     if (options['max-bytes'] && command !== 'init') throw new Error();
   } catch { console.error('Invalid arguments. Run with --help.'); return 2; }
-  const base = {dataDir: options['data-dir'], scope: options.scope || 'private', supportedVersion: 2};
+  const base = {dataDir: options['data-dir'], scope: options.scope || 'private', supportedVersion: 3};
   let memory, result, acquisition, cancelled = false;
   try {
     if (command === 'restore') result = restoreMemory(options.from, base);

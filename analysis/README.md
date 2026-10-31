@@ -2,6 +2,9 @@
 
 Manual offline comparison, query history and a competing-evidence ledger, issue #8.
 Node >=20 and the unchanged E2 dependencies. WATCH OFF. No scheduler or truth model.
+E4's separate [WATCH](../watch/README.md) reuses these comparisons in schema v3.
+The analysis CLI explicitly supports v3; library callers opt into supportedVersion=3.
+The v1→v2 command remains unchanged and does not perform the separate v3 migration.
 Decisions are explicitly attributed operator input, not authenticated OWNER approval.
 
 ## Start and migration

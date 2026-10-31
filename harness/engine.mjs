@@ -16,6 +16,8 @@ const statusCode = response => ({304: 'NOT_MODIFIED', 401: 'AUTH_ERROR', 403: re
   404: 'NOT_FOUND', 429: 'THROTTLED'}[response.status] || (response.status >= 500 ? 'UNAVAILABLE' : 'HTTP_ERROR'));
 const errorCode = error => error instanceof HarnessError ? error.code : 'INVALID_RESPONSE';
 const initial = adapter => ({version: 1, adapter, status: 'OK', observations: [], limitations: [], requests: 0});
+const conditional = (response, options) => response.status === 304 ? {...response, headers: {...response.headers,
+  etag: response.headers.etag || options.etag || null, 'last-modified': response.headers['last-modified'] || options.lastModified || null}} : response;
 function observation(adapter, values, response, now) {
   const limitations = [...(values.limitations || [])];
   const date = value => {
@@ -98,8 +100,10 @@ export function createHarness(input = {}, deps = {}) {
         if (item.private !== false || !validRepo(item.full_name)) { result.coverage.invalidItems++; continue; }
         if (seen.has(item.id)) { result.coverage.duplicateItems++; continue; }
         seen.add(item.id);
+        const metadata = JSON.stringify({id: item.id, full_name: item.full_name, created_at: item.created_at || null, updated_at: item.updated_at || null});
         result.observations.push(observation('github', {sourceType: 'repository', identity: `github:${item.full_name.toLowerCase()}`,
           canonicalUrl: `https://github.com/${item.full_name}`, title: item.full_name,
+          content: metadata, hash: sha256(metadata), revision: sha256(metadata),
           publishedAt: item.created_at, updatedAt: item.updated_at,
           limitations: ['Discovery lead; popularity, search ranking and a search miss do not verify facts or absence.']}, response, now));
         if (result.observations.length >= config.limits.maxResults) break;
@@ -158,7 +162,7 @@ export function createHarness(input = {}, deps = {}) {
     result.observations.push(observation('github', {sourceType: file !== undefined ? 'file' : 'commit',
       identity: `github:${repo.toLowerCase()}:${ref}:${file ?? ''}`, canonicalUrl, revision: ref,
       title: file ?? ref, content, hash: contentHash, publishedAt,
-      status: response.status === 304 ? 'NOT_MODIFIED' : 'OBSERVED', limitations}, response, now));
+      status: response.status === 304 ? 'NOT_MODIFIED' : 'OBSERVED', limitations}, conditional(response, options), now));
   }
   async function rss(options, result) {
     const url = safeURL(options.url, config.allowedHosts).href;
@@ -168,7 +172,7 @@ export function createHarness(input = {}, deps = {}) {
     if (response.status === 304) {
       result.status = 'NOT_MODIFIED';
       result.observations.push(observation('rss', {sourceType: 'feed', identity: url, canonicalUrl: url,
-        status: 'NOT_MODIFIED', limitations: ['No entries returned; retain previous baseline.']}, response, now));
+        status: 'NOT_MODIFIED', limitations: ['No entries returned; retain previous baseline.']}, conditional(response, options), now));
       return;
     }
     if (!/^(application\/(rss\+xml|atom\+xml|xml)|text\/xml)(;|$)/i.test(response.headers['content-type'] || '')) fail('UNSUPPORTED_CONTENT_TYPE');
@@ -221,6 +225,7 @@ export function createHarness(input = {}, deps = {}) {
     result.requests = client.requests - before;
     if (source === 'github' && operation === 'retrieve' && ['OK', 'NOT_MODIFIED'].includes(result.status)) result.coverage.complete = true;
     result.trace = client.trace.slice(-result.requests);
+    if (client.cooldowns.length) result.cooldowns = client.cooldowns;
     if (result.requests === 0) result.trace = [];
     return result;
   }

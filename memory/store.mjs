@@ -5,7 +5,8 @@ import {createRequire} from 'node:module';
 import {checkSchema as checkJSON} from '../tools/research-map.mjs';
 import {readBundle} from './bundle.mjs';
 import {initializeSchema} from './schema.mjs';
-import {validateStorage, E3_TABLES} from './schema-v2.mjs';
+import {E3_TABLES} from './schema-v2.mjs';
+import {validateStorage, E4_TABLES} from './schema-v3.mjs';
 import {MemoryError, fail, hash, clean, safePath, relativeFile, readFile, dataPath,
   MAX_INPUT, MAX_FILE, temporary, publishFile, code} from './safety.mjs';
 
@@ -45,7 +46,7 @@ function validateObservation(value) {
 }
 function safeResult(result) {
   clean(result);
-  const known = ['version', 'adapter', 'status', 'observations', 'limitations', 'requests', 'trace', 'request', 'feed', 'attempts', 'coverage'];
+  const known = ['version', 'adapter', 'status', 'observations', 'limitations', 'requests', 'trace', 'request', 'feed', 'attempts', 'coverage', 'cooldowns'];
   if (!result || Object.keys(result).some(k => !known.includes(k)) || result.version !== 1 ||
       !['github', 'rss', 'fixture', 'web'].includes(result.adapter) || (result.adapter === 'web' && result.observations?.length) || !/^[A-Z_]{1,60}$/.test(result.status) ||
       !Array.isArray(result.observations) || result.observations.length > 100 || Buffer.byteLength(json(result)) > MAX_INPUT) fail('INVALID_RUN');
@@ -59,6 +60,7 @@ function safeResult(result) {
       !Number.isInteger(v.bytes) || v.bytes < 0 || v.bytes > MAX_FILE)) fail('INVALID_RUN');
   };
   request(result.request); limitations(result.limitations); trace(result.trace);
+  if (result.cooldowns !== undefined && (!Array.isArray(result.cooldowns) || result.cooldowns.length>50 || result.cooldowns.some(c=>!c || Object.keys(c).some(k=>!['origin','retryAt'].includes(k)) || !/^https:\/\/[a-z0-9.-]+$/.test(c.origin) || !iso(c.retryAt)))) fail('INVALID_RUN');
   const coverage = c => {
     if (c === undefined) return;
     const counts = ['pagesFetched', 'itemsSeen', 'itemsInspected', 'duplicateItems', 'invalidItems', 'filteredItems', 'resultCap', 'pageCap'];
@@ -103,7 +105,8 @@ export class ResearchMemory {
     try { return this.db.transaction(() => {
       const result = fn();
       for (const table of ['artifacts', 'documents', 'checks', 'runs', 'sources', 'revisions', 'claims', 'bundles', 'map_nodes', 'route_events',
-        ...(this.db.pragma('user_version', {simple: true}) === 2 ? E3_TABLES : [])]) {
+        ...(this.db.pragma('user_version', {simple: true}) >= 2 ? E3_TABLES : []),
+        ...(this.db.pragma('user_version', {simple: true}) === 3 ? E4_TABLES : [])]) {
         if (this.db.prepare(`SELECT count(*) AS n FROM ${table}`).get().n > this.maxRecords) fail('QUOTA');
       }
       return result;
@@ -333,7 +336,7 @@ export class ResearchMemory {
 
 export function openMemory({dataDir, scope = 'private', write = false, init = false, clock, maxBytes = 256 * 1024 * 1024,
   maxRecords, timeout = 5000, supportedVersion = 1} = {}) {
-  if (![1, 2].includes(supportedVersion)) fail('FUTURE_SCHEMA');
+  if (![1, 2, 3].includes(supportedVersion)) fail('FUTURE_SCHEMA');
   if (!Number.isInteger(maxBytes) || maxBytes < 1048576 || maxBytes > 1073741824 || !Number.isInteger(timeout) || timeout < 0 || timeout > 30000 ||
       (maxRecords !== undefined && (!Number.isInteger(maxRecords) || maxRecords < 1 || maxRecords > 100000))) fail('INVALID_QUOTA');
   const file = dataPath(dataDir, scope); let db, created = false;

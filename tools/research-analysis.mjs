@@ -50,7 +50,7 @@ export async function main(args) {
     if (command === 'list' && !options.type) throw new Error();
     if (command === 'report' && (!options.brief || (options['allow-private'] && !options.out))) throw new Error();
   } catch { console.error('Invalid arguments. Run with --help.'); return 2; }
-  const base = {dataDir: options['data-dir'], scope: options.scope || 'private'};
+  const base = {dataDir: options['data-dir'], scope: options.scope || 'private', supportedVersion: 3};
   let analysis;
   try {
     let result;

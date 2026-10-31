@@ -158,7 +158,7 @@ export function createClient({hosts, budget = {}, token, clock = () => Date.now(
             wait = Math.max(0, Number(headersOut['x-ratelimit-reset']) * 1000 - clock());
           }
           wait = Number.isFinite(wait) ? Math.max(1000, wait) : 60000;
-          if (rateLimited) cooldowns.set(url.origin, clock() + wait);
+          if (rateLimited || headersOut['retry-after']) cooldowns.set(url.origin, clock() + wait);
           if (wait <= quota.maxWaitMs && attempt < quota.retries) {
             attempt++; await bounded(sleep(wait, undefined, {signal}), signal); continue;
           }
@@ -175,6 +175,7 @@ export function createClient({hosts, budget = {}, token, clock = () => Date.now(
     }
   }
   return {quota, trace, get requests() { return requests; },
+    get cooldowns() { return [...cooldowns].filter(([,at])=>at>clock()).map(([origin,at])=>({origin,retryAt:new Date(Math.min(at,253402300799999)).toISOString()})); },
     get: (url, options = {}) => {
       // One active request per harness; rejected callers do not poison the queue.
       const task = queue.then(() => perform(url, options));

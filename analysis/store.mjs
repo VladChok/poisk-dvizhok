@@ -11,7 +11,7 @@ const parse = row => row ? {...row, payload: JSON.parse(row.payload_json || row.
 
 export class ResearchAnalysis {
   constructor(memory) {
-    if (memory.migrate().schema !== 2) fail('MIGRATION_REQUIRED');
+    if (memory.migrate().schema < 2) fail('MIGRATION_REQUIRED');
     this.memory = memory; this.db = memory.db;
   }
   close() { this.memory.close(); }
@@ -241,7 +241,7 @@ export class ResearchAnalysis {
     }
   }
 }
-const literal = value => {
+export const literal = value => {
   const text = String(value ?? 'UNKNOWN').replace(/[\x00-\x1f\x7f-\x9f]/g, ' ');
   const length = Math.max(0, ...(text.match(/`+/g) || []).map(s => s.length)) + 1;
   const fence = '`'.repeat(length); return `${fence} ${text} ${fence}`;
@@ -277,6 +277,6 @@ export function renderReport(report) {
   return lines.join('\n') + '\n';
 }
 export function openAnalysis(options = {}) {
-  const memory = openMemory({...options, supportedVersion: 2});
+  const memory = openMemory({...options, supportedVersion: options.supportedVersion ?? 2});
   try { return new ResearchAnalysis(memory); } catch (error) { memory.close(); throw error; }
 }
