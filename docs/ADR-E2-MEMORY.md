@@ -20,6 +20,9 @@ or node-gyp rebuild --release. Prebuilt native binaries are a dependency supply
 chain tradeoff; source-build fallback needs Python/C++ tooling. No fetched
 research source or arbitrary scripts from config are executed. Retain dependency
 and SQLite notices. Test the actual installed SQLite version/FTS5 at runtime.
+Actual CI found no Windows Node 20 prebuild and its bundled node-gyp 10 failed
+VS2026 detection. Pin windows-2022/VS2022 and Python 3.12 for a reproducible native
+source build; keep Node 20 and all tests enabled. Linux Node 20 source build passed.
 
 ## Layout and privacy
 

@@ -27,6 +27,12 @@ The inspected driver installer downloads an upstream prebuilt binary or uses
 node-gyp (source-build fallback needs C++/Python tooling). Missing native bindings
 return DRIVER_UNAVAILABLE; the CLI never installs packages itself. Node 20 is
 retained; the E0 node:sqlite source probe is not used as driver/runtime proof.
+For Windows Node 20, this driver release has no prebuilt binary: install VS2022
+Desktop development with C++ and Python 3.12, then rebuild with
+`$env:npm_config_msvs_version='2022'`. CI pins windows-2022/Python 3.12 for this
+source-build path. Node 20's bundled node-gyp 10 cannot detect VS2026 on the newer
+windows-latest image; that build failure is recorded in the PR, not hidden by a
+runtime bump or skipped tests. Node 22/24 use prebuilt binaries where available.
 
 The equivalent alias is `node tools/research-engine.mjs memory <command> ...`.
 Reads, search, export, doctor and backup never initialize a missing database.

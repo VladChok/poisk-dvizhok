@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-2022]
         node: ['20', '22', '24']
     runs-on: ${{ matrix.os }}
     steps:
@@ -20,8 +20,17 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --version
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Windows' && matrix.node == '20'
+        with:
+          python-version: '3.12'
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm rebuild better-sqlite3 --ignore-scripts=false
+        if: runner.os == 'Windows' && matrix.node == '20'
+        env:
+          npm_config_msvs_version: '2022'
+      - run: npm rebuild better-sqlite3 --ignore-scripts=false
+        if: runner.os != 'Windows' || matrix.node != '20'
       - run: node tools/run-offline.mjs
       - run: node tools/memory-proof.mjs > memory-proof.json
       - uses: actions/upload-artifact@v4

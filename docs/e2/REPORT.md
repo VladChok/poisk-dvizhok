@@ -38,6 +38,12 @@ E3 semantic ranking or E4 watch definitions/scheduler are implemented. WATCH OFF
   × Node 20/22/24, then uploads per-job memory-proof JSON with exact commit/runtime.
   Final observed run links/status are recorded in the E2 PR; configured CI alone
   is not a claim that Linux or any matrix combination passed.
+- Initial head d61ca6a passed five matrix combinations but Windows Node 20 failed
+  native installation: no prebuilt binary and bundled node-gyp 10 could not detect
+  VS2026 on windows-latest. [Failed job](https://github.com/VladChok/poisk-dvizhok/actions/runs/41166569262/job/124435315202).
+  CI now pins windows-2022/VS2022 and Python 3.12 for that source-build path;
+  Node 20 and all assertions remain enabled. Final acceptance uses the new head's
+  complete matrix results in the PR.
 
 Tests cover actual native SQLite I/O, idempotency and key conflicts, history/new
 revision/stale and unknown ETag/304 membership, failed/partial acquisitions,
