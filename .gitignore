@@ -1,0 +1,14 @@
+# Runtime state and credentials are local; research fixtures are explicitly public.
+node_modules/
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+.research-engine/
+local-config.json
+private/
+exports/
+reports/

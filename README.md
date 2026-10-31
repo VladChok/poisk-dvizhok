@@ -54,6 +54,22 @@ No upstream code has been imported. The current direction is to treat Agent Reac
 
 ## Next review
 
+E0 implementation adds an [actual bounded public-source probe](research/e0-node-sqlite/brief.md)
+and an offline handoff inspector. Existing v0 commands and schemas are unchanged.
+
+```text
+node tools/run-offline.mjs
+node tools/research-bundle.mjs inspect research/e0-node-sqlite
+node tools/research-bundle.mjs inspect research/e0-node-sqlite --json
+```
+
+The test wrapper blocks Node network APIs in tests and inherited subprocesses.
+The inspector verifies v0 structure, source coverage and snapshot hashes; it does
+not verify factual truth. See the [recorded execution](research/e0-node-sqlite/EXECUTION.json),
+[independent review gate](research/e0-node-sqlite/REVIEW-GATE.md) and
+[staged ADR](docs/ADR-ENGINE-E0-E4.md). This E0 proof does not implement source
+adapters, a memory service or WATCH. Independent review remains pending.
+
 The Agent Reach source-first review and Map/Evidence contract work are documented. The next operational gate is a **real bounded research probe with a second-executor handoff** using the existing contract and CLI, as described in [SEARCHER integration](docs/SEARCHER-INTEGRATION-v0.md). Do not describe source adapters, automated access, memory or monitoring as working until independently tested and reviewed.
 
 ```text
