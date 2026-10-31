@@ -181,3 +181,21 @@ power-loss/network-filesystem proof or confirmed article/deletion/absence verdic
 Tests simulate crashes/fake clocks, not hardware failures. See docs/e4/REPORT.md
 for exact source/CI evidence and outstanding independent acceptance gates.
 WATCH OFF at handoff; no live smoke, resident monitor, OS registration, merge/deploy.
+
+## FRIDAY P1/P2 corrections
+
+See [fix report](../docs/fixes/FRIDAY-P1-P2-REPORT.md). Validators in the existing
+schema-v3 JSON cursor now include their exact effective URI. Legacy cursors have
+no proven scope and require one explicit unconditional check; reads never upgrade
+or fetch. Redirected RSS is retrieved unconditionally through the declared target.
+Invalid 304 retains the last good bytes, clears the conditional cursor and records
+unknown rather than unchanged.
+
+Scheduled keys bind watch + immutable ENABLE event ID + due slot. Same-clock
+disable/enable creates a distinct durable activation; repeated enable while enabled
+preserves schedule/lease. Eligibility and epoch fencing precede scheduled replay.
+Manual keys and delivery receipts retain their existing idempotency behavior.
+No DDL/checksum/version change or automatic migration. Existing histories and
+backups remain schema3. `node tools/friday-fix-proof.mjs` adds a24-process offline
+restart/restore proof. All enable/due calls in tests use isolated fixture state.
+FRIDAY's previous HOLD requires a fresh independent decision on the submitted SHA.

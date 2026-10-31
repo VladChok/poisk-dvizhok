@@ -35,6 +35,7 @@ jobs:
       - run: node tools/memory-proof.mjs > memory-proof.json
       - run: node tools/comparison-proof.mjs > comparison-proof.json
       - run: node tools/watch-proof.mjs > watch-proof.json
+      - run: node tools/friday-fix-proof.mjs > friday-fix-proof.json
       - run: node tools/verify-runtime-proofs.mjs
       - uses: actions/upload-artifact@v4
         with:
@@ -44,3 +45,4 @@ jobs:
             memory-proof.json
             comparison-proof.json
             watch-proof.json
+            friday-fix-proof.json
