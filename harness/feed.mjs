@@ -44,12 +44,14 @@ export function parseFeed(xml, feedURL, maxResults, documentURL = feedURL) {
   if (!container) fail('MALFORMED_FEED');
   const candidates = children(container, atom ? 'entry' : 'item');
   const entries = [], issues = [], seen = new Set();
+  const counters = {itemsSeen: candidates.length, itemsInspected: 0, duplicateItems: 0, invalidItems: 0, filteredItems: 0};
   for (const item of candidates) {
+    counters.itemsInspected++;
     const linkNode = atom ? children(item, 'link').find(l => !l.attrs.rel || l.attrs.rel.value === 'alternate') : children(item, 'link')[0];
     const link = atom ? linkNode?.attrs.href?.value : linkNode?.text.trim();
     const id = value(item, atom ? 'id' : 'guid') || link;
-    if (!id) { issues.push('ITEM_WITHOUT_STABLE_ID'); continue; }
-    if (seen.has(id)) { issues.push('DUPLICATE_ITEM'); continue; }
+    if (!id) { counters.invalidItems++; issues.push('ITEM_WITHOUT_STABLE_ID'); continue; }
+    if (seen.has(id)) { counters.duplicateItems++; issues.push('DUPLICATE_ITEM'); continue; }
     seen.add(id);
     const limitations = [];
     let canonicalUrl = feedURL;
@@ -74,5 +76,5 @@ export function parseFeed(xml, feedURL, maxResults, documentURL = feedURL) {
   const limitations = [...new Set(issues)];
   if (entries.length < candidates.length && entries.length >= maxResults) limitations.push('RESULT_LIMIT');
   const updatedAt = date(value(container, atom ? 'updated' : 'lastBuildDate'), limitations);
-  return {entries, updatedAt, limitations, totalItems: candidates.length};
+  return {entries, updatedAt, limitations, totalItems: candidates.length, counters};
 }

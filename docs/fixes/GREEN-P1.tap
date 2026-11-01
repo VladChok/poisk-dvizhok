@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: P1 shared transport drops both validators on every changed URI/status and all later redirect hops
+ok 1 - P1 shared transport drops both validators on every changed URI/status and all later redirect hops
+  ---
+  duration_ms: 5.9744
+  type: 'test'
+  ...
+# Subtest: P1 RSS acquisition does not forward A validators when A starts redirecting to changed B
+ok 2 - P1 RSS acquisition does not forward A validators when A starts redirecting to changed B
+  ---
+  duration_ms: 2.6971
+  type: 'test'
+  ...
+# Subtest: P1 WATCH follows newly introduced multi-hop redirects without losing changed bytes or root URI provenance
+ok 3 - P1 WATCH follows newly introduced multi-hop redirects without losing changed bytes or root URI provenance
+  ---
+  duration_ms: 147.7052
+  type: 'test'
+  ...
+# Subtest: P1 redirected empty feed stores final URI and never attaches that validator to the original target
+ok 4 - P1 redirected empty feed stores final URI and never attaches that validator to the original target
+  ---
+  duration_ms: 113.4139
+  type: 'test'
+  ...
+# Subtest: P1 direct matching ETag/Last-Modified 304 without response validators remains validated and durable
+ok 5 - P1 direct matching ETag/Last-Modified 304 without response validators remains validated and durable
+  ---
+  duration_ms: 133.0394
+  type: 'test'
+  ...
+# Subtest: P1 mismatched/missing/unsolicited redirect 304 is unknown, retains bytes, and refreshes unconditionally
+ok 6 - P1 mismatched/missing/unsolicited redirect 304 is unknown, retains bytes, and refreshes unconditionally
+  ---
+  duration_ms: 181.758
+  type: 'test'
+  ...
+# Subtest: P1 legacy schema-v3 validator JSON is not reinterpreted as scoped and is upgraded only by explicit 200
+ok 7 - P1 legacy schema-v3 validator JSON is not reinterpreted as scoped and is upgraded only by explicit 200
+  ---
+  duration_ms: 122.6576
+  type: 'test'
+  ...
+# Subtest: P1 pinned GitHub file audit preserves exact API URI and validates direct 304
+ok 8 - P1 pinned GitHub file audit preserves exact API URI and validates direct 304
+  ---
+  duration_ms: 105.9254
+  type: 'test'
+  ...
+# Subtest: P1 scoped metadata rejects fabricated redirected conditions and credentials before writing any run
+ok 9 - P1 scoped metadata rejects fabricated redirected conditions and credentials before writing any run
+  ---
+  duration_ms: 75.6448
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 981.1719

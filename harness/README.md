@@ -111,7 +111,11 @@ Resolve all addresses for each hop, rejecting the whole answer if any address is
 private/loopback/link-local/multicast/reserved or a disallowed IPv6 transition.
 Pin checked addresses into the agent-free HTTPS connection lookup; normal TLS
 hostname/certificate checks stay enabled. Each redirect repeats URL/DNS checks.
-Cross-origin validators are stripped; GitHub rejects cross-origin redirects.
+Validators are scoped to the exact URI and stripped after every redirect,
+including same-origin path/query changes; GitHub rejects cross-origin redirects.
+Acquisition result `representation` records the request/final URI and conditions
+actually sent. Unsolicited or mismatched 304 is UNVALIDATED_NOT_MODIFIED, with no
+invented content. Observation and Evidence v0 fields stay unchanged.
 Compressed responses are rejected to bound size. No proxy environment, private-LAN
 mode, cookies, shell scripts or source execution.
 
