@@ -1,0 +1,39 @@
+TAP version 13
+# Subtest: review: a legal manual idempotency key cannot satisfy a future scheduled slot
+not ok 1 - review: a legal manual idempotency key cannot satisfy a future scheduled slot
+  ---
+  duration_ms: 405.1811
+  type: 'test'
+  location: '<checkout>\\tests\\friday-origin.test.mjs:14:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    A completed manual request must not satisfy a scheduled slot
+    + actual - expected
+    
+    + true
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<checkout>/tests/friday-origin.test.mjs:30:10)
+    async Test.run (node:internal/test_runner/test:1389:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: review: redirect loop never reattaches validators, every hop pins DNS, GitHub credentials cannot cross host
+ok 2 - review: redirect loop never reattaches validators, every hop pins DNS, GitHub credentials cannot cross host
+  ---
+  duration_ms: 2.8262
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 1
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 591.778
