@@ -1,0 +1,41 @@
+// Reviewer-owned tests outside the submitted checkout. Never uses live HTTP.
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {openMemory} from '../memory/store.mjs';
+import {migrateToV2} from '../memory/migrate.mjs';
+import {migrateToV3} from '../memory/migrate-v3.mjs';
+import {openWatch} from '../watch/store.mjs';
+import {createClient} from '../harness/network.mjs';
+const cases=[];
+test('review: a legal manual idempotency key cannot satisfy a future scheduled slot',async t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'friday-independent-'));let w,clock='2026-11-01T00:00:00.000Z',calls=0;
+  t.after(()=>{w?.close();fs.rmSync(dir,{recursive:true,force:true});});
+  const m=openMemory({dataDir:dir,scope:'public',init:true,clock:()=>clock});m.close();
+  await migrateToV2({dataDir:dir,scope:'public',backup:path.join(dir,'v1.sqlite')});
+  await migrateToV3({dataDir:dir,scope:'public',backup:path.join(dir,'v2.sqlite')});
+  const harness={token:'',lookup:async()=>[{address:'8.8.8.8',family:4}],wire:async()=>{calls++;return {status:200,headers:{'content-type':'application/rss+xml',etag:`"v${calls}"`},body:`<rss><channel><item><guid>one</guid><description>representation ${calls}</description></item></channel></rss>`};}};
+  w=openWatch({dataDir:dir,scope:'public',write:true,clock:()=>clock},{harness});
+  const a='https://feeds.example.com/feed',added=w.add({name:'manual-slot',source:'rss',url:a,interval:'1h',config:{allowedHosts:['feeds.example.com'],feeds:[a],limits:{retries:0,minIntervalMs:0}}});
+  const enabled=w.control(added.id,'ENABLE'),future='2026-11-01T01:00:00.000Z';
+  const key='due-v2:'+createHash('sha256').update(JSON.stringify([added.id,enabled.activationId,future])).digest('hex');
+  const manual=await w.run(added.id,{key});assert.equal(manual.schedule,null);assert.equal(w.show(added.id).nextDueAt,future);
+  w.close();w=openWatch({dataDir:dir,scope:'public',write:true,clock:()=>clock},{harness});
+  clock=future;const due=await w.due();clock='2026-11-01T03:00:00.000Z';const later=await w.due(),state=w.show(added.id);
+  cases.push({id:'P2-manual-schedule-namespace',key,manualSchedule:manual.schedule,manualAttempt:manual.attempt,due:due.results[0],later:later.results[0],requests:calls,nextDueAt:state.nextDueAt,clock});
+  w.control(added.id,'DISABLE');
+  assert.equal(due.results[0].duplicate,undefined,'A completed manual request must not satisfy a scheduled slot');
+  assert.ok(state.nextDueAt>clock,'Scheduled state must not remain expired after duplicate manual replay');
+});
+test('review: redirect loop never reattaches validators, every hop pins DNS, GitHub credentials cannot cross host',async()=>{
+  const calls=[],dns=[],a='https://feeds.example.com/a',b='https://feeds.example.com/a?q=other';
+  const c=createClient({hosts:['feeds.example.com'],budget:{minIntervalMs:0,retries:0},lookup:async host=>{dns.push(host);return [{address:'8.8.8.8',family:4}];},wire:async(url,o)=>{calls.push({url:url.href,tag:o.headers['if-none-match']||null,address:o.addresses[0].address});return {status:calls.length<3?302:200,headers:calls.length===1?{location:b}:calls.length===2?{location:a}:{},body:'ok'};}});
+  const r=await c.get(a,{etag:'"a"'});assert.deepEqual(calls.map(x=>x.tag),['"a"',null,null]);assert.equal(dns.length,3);assert.equal(r.representation.conditional.etag,null);
+  let outgoing=0;const gh=createClient({hosts:['api.github.com','cdn.example.com'],token:'synthetic-review-token',budget:{retries:0,minIntervalMs:0},lookup:async()=>[{address:'8.8.8.8',family:4}],wire:async(url,o)=>{outgoing++;assert.equal(url.hostname,'api.github.com');assert.equal(o.headers.authorization,'Bearer synthetic-review-token');return {status:302,headers:{location:'https://cdn.example.com/content'},body:''};}});
+  await assert.rejects(gh.get('https://api.github.com/public',{auth:true}),/UNSAFE_REDIRECT/);assert.equal(outgoing,1);
+  cases.push({id:'P1-review-loop-auth',calls,dnsLookups:dns.length,crossOriginAuthRequests:0});
+});
+test.after(()=>process.env.FRIDAY_ORIGIN_EVIDENCE_FILE&&fs.writeFileSync(process.env.FRIDAY_ORIGIN_EVIDENCE_FILE,JSON.stringify({head:'410e06190f350726c23273213f1ffea180060d21',cases,watch:'OFF'},null,2)+'\n'));
