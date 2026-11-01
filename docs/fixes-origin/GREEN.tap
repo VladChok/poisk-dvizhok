@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: review: a legal manual idempotency key cannot satisfy a future scheduled slot
+ok 1 - review: a legal manual idempotency key cannot satisfy a future scheduled slot
+  ---
+  duration_ms: 209.4937
+  type: 'test'
+  ...
+# Subtest: review: redirect loop never reattaches validators, every hop pins DNS, GitHub credentials cannot cross host
+ok 2 - review: redirect loop never reattaches validators, every hop pins DNS, GitHub credentials cannot cross host
+  ---
+  duration_ms: 1.2961
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 307.5565

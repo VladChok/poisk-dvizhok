@@ -21,6 +21,9 @@ function readJSON(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
 }
 export async function main(args) {
+  if (args[0] === 'watch') return (await import('./research-watch.mjs')).main(args.slice(1));
+  if (args[0] === 'analysis') return (await import('./research-analysis.mjs')).main(args.slice(1));
+  if (args[0] === 'memory') return (await import('./research-memory.mjs')).main(args.slice(1));
   if (args.length === 1 && args[0] === '--help') { console.log(help); return 0; }
   const command = args[0], options = {};
   if (!['doctor', 'discover', 'retrieve'].includes(command)) { console.error(help); return 2; }

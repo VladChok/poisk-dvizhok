@@ -1,0 +1,59 @@
+{
+  "startedAt": "2026-10-31T08:45:43.708Z",
+  "completedAt": "2026-10-31T08:45:59.136Z",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "arch": "x64",
+  "base": "a407d9f355e54898af5c003cdf2de7bff8f58ee2",
+  "shaAtExecution": "a407d9f355e54898af5c003cdf2de7bff8f58ee2",
+  "workingTreeDirty": true,
+  "provenance": "Dirty local pre-commit evidence, not final-head CI. Exact submitted SHA/clean-checkout hosted CI results and artifacts are in the Draft PR description.",
+  "baseline": {
+    "tests": 107,
+    "pass": 107,
+    "exitCode": 0,
+    "memoryProcesses": 19,
+    "comparisonProcesses": 34,
+    "proofExits": [
+      0,
+      0
+    ]
+  },
+  "tests": {
+    "originalUnchanged": 107,
+    "newE4": 23,
+    "total": 130,
+    "pass": 130,
+    "fail": 0,
+    "skipped": 0
+  },
+  "commands": [
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap",
+      "exitCode": 0,
+      "stdoutFile": "OFFLINE-WINDOWS.tap",
+      "stderr": ""
+    },
+    {
+      "command": "node tools/memory-proof.mjs",
+      "exitCode": 0,
+      "stdoutFile": "MEMORY-WINDOWS.json",
+      "stderr": ""
+    },
+    {
+      "command": "node tools/comparison-proof.mjs",
+      "exitCode": 0,
+      "stdoutFile": "COMPARISON-WINDOWS.json",
+      "stderr": ""
+    },
+    {
+      "command": "node tools/watch-proof.mjs",
+      "exitCode": 0,
+      "stdoutFile": "WATCH-WINDOWS.json",
+      "stderr": ""
+    }
+  ],
+  "backgroundWorker": "NOT_STARTED",
+  "osTasksInstalled": 0,
+  "watch": "OFF"
+}
