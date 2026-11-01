@@ -1,0 +1,142 @@
+{
+  "brief": "e0-node-sqlite",
+  "nodes": [
+    {
+      "id": "F0",
+      "level": "FIELD",
+      "title": "Built-in SQLite suitability at Node v22.13.0",
+      "parent": null,
+      "status": "DONE",
+      "reason": "Bounded historical source question answered; implementation decision deferred.",
+      "sources": [],
+      "reach": [],
+      "notes": ""
+    },
+    {
+      "id": "CL-api",
+      "level": "CLUSTER",
+      "title": "First-party API documentation",
+      "parent": "F0",
+      "status": "DONE",
+      "reason": "Inspect declared lifecycle and storage interface.",
+      "sources": [],
+      "reach": [],
+      "notes": ""
+    },
+    {
+      "id": "CA-api",
+      "level": "CANDIDATE",
+      "title": "SQLite API documentation",
+      "parent": "CL-api",
+      "status": "SURVIVED",
+      "reason": "Pinned primary source describes lifecycle, sync API and file-backed location.",
+      "sources": [
+        {
+          "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/doc/api/sqlite.md",
+          "position": "L1-L120",
+          "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-10-31"
+        },
+        {
+          "tool": "web-fetch",
+          "at": "2026-10-31"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CL-code",
+      "level": "CLUSTER",
+      "title": "First-party implementation entry point",
+      "parent": "F0",
+      "status": "DONE",
+      "reason": "Check implementation warning rather than treating prose as runtime proof.",
+      "sources": [],
+      "reach": [],
+      "notes": ""
+    },
+    {
+      "id": "CA-code",
+      "level": "CANDIDATE",
+      "title": "SQLite module entry point",
+      "parent": "CL-code",
+      "status": "SURVIVED",
+      "reason": "Pinned source visibly emits an experimental warning; retain for review.",
+      "sources": [
+        {
+          "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/lib/sqlite.js",
+          "position": "L1-L5",
+          "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-10-31"
+        },
+        {
+          "tool": "web-fetch",
+          "at": "2026-10-31"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-license",
+      "level": "CANDIDATE",
+      "title": "MIT license as storage capability evidence",
+      "parent": "CL-code",
+      "status": "CUT",
+      "reason": "License permits snapshot reuse but does not establish storage durability or API maturity.",
+      "sources": [
+        {
+          "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/LICENSE",
+          "position": "L1-L23",
+          "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-10-31"
+        },
+        {
+          "tool": "web-fetch",
+          "at": "2026-10-31"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "id": "CA-platform",
+      "level": "CANDIDATE",
+      "title": "Windows/Linux driver and restart verification",
+      "parent": "CL-code",
+      "status": "OPEN",
+      "reason": "",
+      "sources": [
+        {
+          "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/doc/api/sqlite.md",
+          "position": "L77-L94",
+          "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120"
+        }
+      ],
+      "reach": [
+        {
+          "tool": "prior-knowledge",
+          "at": "2026-10-31"
+        },
+        {
+          "tool": "web-fetch",
+          "at": "2026-10-31"
+        }
+      ],
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "head": "410e06190f350726c23273213f1ffea180060d21",
+  "cases": [
+    {
+      "id": "P2-manual-schedule-namespace",
+      "key": "due-v2:61c6331292e6ca46eb2373211ca60dc77b473c1b434042dd243df8f8f5946254",
+      "manualSchedule": null,
+      "manualAttempt": "34b3c67e6fd7f8dde312f3e6a910562e33b0aa73341367e6a5fd98929da7be5f",
+      "due": {
+        "acquisitionStatus": "OK",
+        "attempt": "34b3c67e6fd7f8dde312f3e6a910562e33b0aa73341367e6a5fd98929da7be5f",
+        "baselineRun": "cb3d1ec2cf5bbeca70e642f6984fc0819dc5f1b86d3f0ca09775c10e203104f8",
+        "coverageId": "1995c0112d75835513172c145b1afea97acf971adbd22727a53a0189b534c9b7",
+        "emitted": true,
+        "events": [
+          {
+            "absence": "NOT_PROVEN",
+            "changedFields": [],
+            "comparisonId": null,
+            "factualContradiction": false,
+            "id": "6f228238fdcbfe186a1d61dc4fbd451a7c5a94a4991c36284403aa0876148202",
+            "identity": "rss:feed-entry:https://feeds.example.com/feed#entry=one",
+            "kind": "NEW",
+            "left": null,
+            "reason": "NEW_CAPTURE_IN_BOUNDED_SCOPE; not independently verified",
+            "right": {
+              "adapter": "rss",
+              "availability": "OBSERVED",
+              "baselineStatus": "OBSERVED",
+              "byteLength": 16,
+              "checkId": "e73c476b889c21d1c21cdbddc4662c90ab6e7b9ddb86c34ac6f7a49b4adac0d7",
+              "checkObservation": {
+                "accessRoute": "https://feeds.example.com/feed",
+                "adapter": "rss",
+                "canonicalUrl": "https://feeds.example.com/feed",
+                "etag": "\"v1\"",
+                "hash": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "identity": "https://feeds.example.com/feed#entry=one",
+                "lastModified": null,
+                "limitations": [
+                  "Feed publisher claims; linked pages were not fetched."
+                ],
+                "observedAt": "2026-11-01T00:00:00.000Z",
+                "publishedAt": null,
+                "revision": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "sourceType": "feed-entry",
+                "status": "OBSERVED",
+                "title": "",
+                "updatedAt": null,
+                "version": 1
+              },
+              "comparisonBaseline": "OBSERVED",
+              "contentDigest": "e356763f61aea37a6c274593a5faeb8527e200f2bb85c5613fbc759189f65944",
+              "contentIdentity": "rss:feed-entry:https://feeds.example.com/feed#entry=one",
+              "eventAt": null,
+              "hasContent": true,
+              "hash": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+              "identity": "https://feeds.example.com/feed#entry=one",
+              "observation": {
+                "accessRoute": "https://feeds.example.com/feed",
+                "adapter": "rss",
+                "canonicalUrl": "https://feeds.example.com/feed",
+                "etag": "\"v1\"",
+                "hash": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "identity": "https://feeds.example.com/feed#entry=one",
+                "lastModified": null,
+                "limitations": [
+                  "Feed publisher claims; linked pages were not fetched."
+                ],
+                "observedAt": "2026-11-01T00:00:00.000Z",
+                "publishedAt": null,
+                "revision": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "sourceType": "feed-entry",
+                "status": "OBSERVED",
+                "title": "",
+                "updatedAt": null,
+                "version": 1
+              },
+              "pointer": {
+                "locator": "https://feeds.example.com/feed",
+                "version": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb"
+              },
+              "publishedAt": null,
+              "recordedSourceType": "feed-entry",
+              "retrievedAt": "2026-11-01T00:00:00.000Z",
+              "revisionId": "27409ca7f717f39e890fe47d21c3e9ea5f6198b05cff4d5fecbf0e9d877c051c",
+              "sourceId": "bef4a58a43a75a6362d778d4311b4c2169bedbf950f012067b4fa37c203dbada",
+              "sourceType": "feed-entry",
+              "updatedAt": null
+            },
+            "validatedBy": null
+          }
+        ],
+        "nextDueAt": "2026-11-01T01:00:00.000Z",
+        "reportId": "e5bf120bc8b0423915559e156efde67e05d990b2a7233a2b315a5555abcdcb5d",
+        "runId": "cb3d1ec2cf5bbeca70e642f6984fc0819dc5f1b86d3f0ca09775c10e203104f8",
+        "schedule": null,
+        "status": "OK",
+        "watch": "OFF",
+        "duplicate": true
+      },
+      "later": {
+        "acquisitionStatus": "OK",
+        "attempt": "34b3c67e6fd7f8dde312f3e6a910562e33b0aa73341367e6a5fd98929da7be5f",
+        "baselineRun": "cb3d1ec2cf5bbeca70e642f6984fc0819dc5f1b86d3f0ca09775c10e203104f8",
+        "coverageId": "1995c0112d75835513172c145b1afea97acf971adbd22727a53a0189b534c9b7",
+        "emitted": true,
+        "events": [
+          {
+            "absence": "NOT_PROVEN",
+            "changedFields": [],
+            "comparisonId": null,
+            "factualContradiction": false,
+            "id": "6f228238fdcbfe186a1d61dc4fbd451a7c5a94a4991c36284403aa0876148202",
+            "identity": "rss:feed-entry:https://feeds.example.com/feed#entry=one",
+            "kind": "NEW",
+            "left": null,
+            "reason": "NEW_CAPTURE_IN_BOUNDED_SCOPE; not independently verified",
+            "right": {
+              "adapter": "rss",
+              "availability": "OBSERVED",
+              "baselineStatus": "OBSERVED",
+              "byteLength": 16,
+              "checkId": "e73c476b889c21d1c21cdbddc4662c90ab6e7b9ddb86c34ac6f7a49b4adac0d7",
+              "checkObservation": {
+                "accessRoute": "https://feeds.example.com/feed",
+                "adapter": "rss",
+                "canonicalUrl": "https://feeds.example.com/feed",
+                "etag": "\"v1\"",
+                "hash": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "identity": "https://feeds.example.com/feed#entry=one",
+                "lastModified": null,
+                "limitations": [
+                  "Feed publisher claims; linked pages were not fetched."
+                ],
+                "observedAt": "2026-11-01T00:00:00.000Z",
+                "publishedAt": null,
+                "revision": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "sourceType": "feed-entry",
+                "status": "OBSERVED",
+                "title": "",
+                "updatedAt": null,
+                "version": 1
+              },
+              "comparisonBaseline": "OBSERVED",
+              "contentDigest": "e356763f61aea37a6c274593a5faeb8527e200f2bb85c5613fbc759189f65944",
+              "contentIdentity": "rss:feed-entry:https://feeds.example.com/feed#entry=one",
+              "eventAt": null,
+              "hasContent": true,
+              "hash": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+              "identity": "https://feeds.example.com/feed#entry=one",
+              "observation": {
+                "accessRoute": "https://feeds.example.com/feed",
+                "adapter": "rss",
+                "canonicalUrl": "https://feeds.example.com/feed",
+                "etag": "\"v1\"",
+                "hash": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "identity": "https://feeds.example.com/feed#entry=one",
+                "lastModified": null,
+                "limitations": [
+                  "Feed publisher claims; linked pages were not fetched."
+                ],
+                "observedAt": "2026-11-01T00:00:00.000Z",
+                "publishedAt": null,
+                "revision": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb",
+                "sourceType": "feed-entry",
+                "status": "OBSERVED",
+                "title": "",
+                "updatedAt": null,
+                "version": 1
+              },
+              "pointer": {
+                "locator": "https://feeds.example.com/feed",
+                "version": "899a09d307c725e91689446b5a4494d7a70c48c397318c6d9a173500127abefb"
+              },
+              "publishedAt": null,
+              "recordedSourceType": "feed-entry",
+              "retrievedAt": "2026-11-01T00:00:00.000Z",
+              "revisionId": "27409ca7f717f39e890fe47d21c3e9ea5f6198b05cff4d5fecbf0e9d877c051c",
+              "sourceId": "bef4a58a43a75a6362d778d4311b4c2169bedbf950f012067b4fa37c203dbada",
+              "sourceType": "feed-entry",
+              "updatedAt": null
+            },
+            "validatedBy": null
+          }
+        ],
+        "nextDueAt": "2026-11-01T01:00:00.000Z",
+        "reportId": "e5bf120bc8b0423915559e156efde67e05d990b2a7233a2b315a5555abcdcb5d",
+        "runId": "cb3d1ec2cf5bbeca70e642f6984fc0819dc5f1b86d3f0ca09775c10e203104f8",
+        "schedule": null,
+        "status": "OK",
+        "watch": "OFF",
+        "duplicate": true
+      },
+      "requests": 1,
+      "nextDueAt": "2026-11-01T01:00:00.000Z",
+      "clock": "2026-11-01T03:00:00.000Z"
+    },
+    {
+      "id": "P1-review-loop-auth",
+      "calls": [
+        {
+          "url": "https://feeds.example.com/a",
+          "tag": "\"a\"",
+          "address": "8.8.8.8"
+        },
+        {
+          "url": "https://feeds.example.com/a?q=other",
+          "tag": null,
+          "address": "8.8.8.8"
+        },
+        {
+          "url": "https://feeds.example.com/a",
+          "tag": null,
+          "address": "8.8.8.8"
+        }
+      ],
+      "dnsLookups": 3,
+      "crossOriginAuthRequests": 0
+    }
+  ],
+  "watch": "OFF"
+}

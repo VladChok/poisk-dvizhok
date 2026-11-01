@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: origin: scheduled→manual collision executes a manual acquisition then replays only that manual receipt
+ok 1 - origin: scheduled→manual collision executes a manual acquisition then replays only that manual receipt
+  ---
+  duration_ms: 186.6619
+  type: 'test'
+  ...
+# Subtest: origin: legacy manual due-v2 key survives and cannot poison scheduled replay, even behind a newer scheduled row
+ok 2 - origin: legacy manual due-v2 key survives and cannot poison scheduled replay, even behind a newer scheduled row
+  ---
+  duration_ms: 131.3524
+  type: 'test'
+  ...
+# Subtest: origin: missing legacy provenance is retained but refreshed once, then the new manual completion replays
+ok 3 - origin: missing legacy provenance is retained but refreshed once, then the new manual completion replays
+  ---
+  duration_ms: 124.6584
+  type: 'test'
+  ...
+# Subtest: origin: writable result schedule cannot turn an immutable manual CHECK_START into scheduled provenance
+ok 4 - origin: writable result schedule cannot turn an immutable manual CHECK_START into scheduled provenance
+  ---
+  duration_ms: 117.7482
+  type: 'test'
+  ...
+# Subtest: origin: old scheduled rows without epoch/slot never replay as manual or as an unproven current slot
+ok 5 - origin: old scheduled rows without epoch/slot never replay as manual or as an unproven current slot
+  ---
+  duration_ms: 145.591
+  type: 'test'
+  ...
+# Subtest: origin: conflicting immutable CHECK_START records are ambiguous and do not establish manual origin
+ok 6 - origin: conflicting immutable CHECK_START records are ambiguous and do not establish manual origin
+  ---
+  duration_ms: 228.1438
+  type: 'test'
+  ...
+# Subtest: origin: stale activation or wrong due slot in start/result cannot satisfy a current scheduled key
+ok 7 - origin: stale activation or wrong due slot in start/result cannot satisfy a current scheduled key
+  ---
+  duration_ms: 245.4297
+  type: 'test'
+  ...
+# Subtest: origin: concurrent due workers ignore a completed manual collision, honor lease and commit one slot
+ok 8 - origin: concurrent due workers ignore a completed manual collision, honor lease and commit one slot
+  ---
+  duration_ms: 124.0723
+  type: 'test'
+  ...
+# Subtest: origin: v3 backup/new-root restore retains legacy collision history, manual receipt and scheduled origin
+ok 9 - origin: v3 backup/new-root restore retains legacy collision history, manual receipt and scheduled origin
+  ---
+  duration_ms: 198.0243
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1594.0172

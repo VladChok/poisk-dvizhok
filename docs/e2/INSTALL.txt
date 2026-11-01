@@ -1,0 +1,6 @@
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+
+added 41 packages in 446ms
+npm warn rebuild 1 package has install scripts not yet covered by allowScripts. Run `npm approve-scripts --allow-scripts-pending` to review.
+rebuilt dependencies successfully
+ci_exit=0 rebuild_exit=0

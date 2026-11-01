@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source Harness observation v1 (separate from Evidence v0)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {"const": 1},
+    "adapter": {"enum": ["github", "rss", "fixture"]},
+    "sourceType": {"enum": ["repository", "repository-search", "commit", "file", "feed", "feed-entry", "fixture"]},
+    "identity": {"type": "string", "minLength": 1},
+    "canonicalUrl": {"type": "string", "minLength": 1},
+    "accessRoute": {"type": "string", "minLength": 1},
+    "observedAt": {"type": "string", "format": "date-time"},
+    "publishedAt": {"type": ["string", "null"], "format": "date-time"},
+    "updatedAt": {"type": ["string", "null"], "format": "date-time"},
+    "revision": {"type": ["string", "null"]},
+    "etag": {"type": ["string", "null"]},
+    "lastModified": {"type": ["string", "null"]},
+    "hash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "status": {"enum": ["OBSERVED", "NOT_MODIFIED"]},
+    "title": {"type": "string"},
+    "content": {"type": ["string", "null"]},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  },
+  "required": ["version", "adapter", "sourceType", "identity", "canonicalUrl", "accessRoute", "observedAt", "publishedAt", "updatedAt", "revision", "etag", "lastModified", "hash", "status", "title", "content", "limitations"]
+}
