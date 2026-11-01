@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "items": [
+    {"id": "fixture-russian", "content": "Проверка источника — тестовые данные."},
+    {"id": "fixture-second", "content": "Deterministic offline lead, not a verified fact."}
+  ]
+}
