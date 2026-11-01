@@ -46,7 +46,7 @@ function validateObservation(value) {
 }
 function safeResult(result) {
   clean(result);
-  const known = ['version', 'adapter', 'status', 'observations', 'limitations', 'requests', 'trace', 'request', 'feed', 'attempts', 'coverage', 'cooldowns'];
+  const known = ['version', 'adapter', 'status', 'observations', 'limitations', 'requests', 'trace', 'request', 'feed', 'attempts', 'coverage', 'cooldowns', 'representation'];
   if (!result || Object.keys(result).some(k => !known.includes(k)) || result.version !== 1 ||
       !['github', 'rss', 'fixture', 'web'].includes(result.adapter) || (result.adapter === 'web' && result.observations?.length) || !/^[A-Z_]{1,60}$/.test(result.status) ||
       !Array.isArray(result.observations) || result.observations.length > 100 || Buffer.byteLength(json(result)) > MAX_INPUT) fail('INVALID_RUN');
@@ -60,6 +60,18 @@ function safeResult(result) {
       !Number.isInteger(v.bytes) || v.bytes < 0 || v.bytes > MAX_FILE)) fail('INVALID_RUN');
   };
   request(result.request); limitations(result.limitations); trace(result.trace);
+  if (result.representation !== undefined) {
+    const p = result.representation, c = p?.conditional;
+    const uri = value => {
+      if (typeof value !== 'string' || value.length > 8192) return false;
+      try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password && !u.port && !u.hash && u.href === value; } catch { return false; }
+    };
+    const validator = value => value === null || (typeof value === 'string' && value.length <= 4096);
+    if (!p || Object.keys(p).some(k => !['version','requestUrl','effectiveUrl','redirected','conditional'].includes(k)) || p.version !== 1 ||
+        !uri(p.requestUrl) || !uri(p.effectiveUrl) || typeof p.redirected !== 'boolean' || !c ||
+        Object.keys(c).some(k => !['uri','etag','lastModified'].includes(k)) || c.uri !== p.effectiveUrl || !validator(c.etag) || !validator(c.lastModified) ||
+        ((p.redirected || p.requestUrl !== p.effectiveUrl) && (c.etag || c.lastModified))) fail('INVALID_REPRESENTATION');
+  }
   if (result.cooldowns !== undefined && (!Array.isArray(result.cooldowns) || result.cooldowns.length>50 || result.cooldowns.some(c=>!c || Object.keys(c).some(k=>!['origin','retryAt'].includes(k)) || !/^https:\/\/[a-z0-9.-]+$/.test(c.origin) || !iso(c.retryAt)))) fail('INVALID_RUN');
   const coverage = c => {
     if (c === undefined) return;
@@ -194,7 +206,7 @@ export class ResearchMemory {
       if (result.feed) {
         const feed = result.feed;
         this.observation({version: 1, adapter: 'rss', sourceType: 'feed', identity: feed.identity, canonicalUrl: feed.identity,
-          accessRoute: result.request?.url || feed.identity, observedAt: observations[0]?.observedAt || at,
+          accessRoute: result.representation?.effectiveUrl || result.request?.url || feed.identity, observedAt: observations[0]?.observedAt || at,
           publishedAt: null, updatedAt: feed.updatedAt, revision: feed.hash, etag: feed.etag, lastModified: feed.lastModified,
           hash: feed.hash, status: 'OBSERVED', title: feed.identity, content: null,
           limitations: ['Feed response metadata retained; full feed body was not supplied by E1. Entries are separate observations.']}, id, brief);

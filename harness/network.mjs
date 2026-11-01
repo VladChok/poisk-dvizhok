@@ -92,7 +92,7 @@ export function createClient({hosts, budget = {}, token, clock = () => Date.now(
   let requests = 0, lastRequest = null, queue = Promise.resolve();
   const cooldowns = new Map();
   const trace = [];
-  async function perform(input, {signal: external, etag, lastModified, auth = false} = {}) {
+  async function perform(input, {signal: external, etag, lastModified, validatorUrl, auth = false} = {}) {
     const controller = new AbortController();
     const cancel = () => controller.abort(new HarnessError('CANCELLED'));
     if (external?.aborted) cancel();
@@ -100,9 +100,10 @@ export function createClient({hosts, budget = {}, token, clock = () => Date.now(
     // Wall-clock timeout covers DNS, pacing, redirects, retries AND response body.
     const timer = setTimeout(() => controller.abort(new HarnessError('TIMEOUT')), quota.timeoutMs);
     const signal = controller.signal;
-    let url, origin, hops = 0, attempt = 0;
+    let url, origin, requestUrl, conditionUrl, hops = 0, attempt = 0;
     try {
-      url = safeURL(input, hosts); origin = url.origin;
+      url = safeURL(input, hosts); origin = url.origin; requestUrl = url.href;
+      conditionUrl = validatorUrl === undefined ? requestUrl : safeURL(validatorUrl, hosts).href;
       while (true) {
         if (signal.aborted) fail(signal.reason?.code || 'CANCELLED');
         if ((cooldowns.get(url.origin) || 0) > clock()) fail('THROTTLED');
@@ -118,8 +119,9 @@ export function createClient({hosts, budget = {}, token, clock = () => Date.now(
           headers['x-github-api-version'] = '2022-11-28';
           if (auth && token && url.origin === origin) headers.authorization = `Bearer ${token}`;
         }
-        // Never forward credentials OR conditional validators across origins.
-        if (url.origin === origin) {
+        // A validator belongs to one exact URI, not an origin. After any
+        // redirect retrieve unconditionally, including a same-origin path/query.
+        if (hops === 0 && url.href === requestUrl && conditionUrl === requestUrl) {
           if (etag) headers['if-none-match'] = etag;
           if (lastModified) headers['if-modified-since'] = lastModified;
         }
@@ -164,6 +166,8 @@ export function createClient({hosts, budget = {}, token, clock = () => Date.now(
           }
         }
         return {status: response.status, headers: headersOut, body, url: url.href, requests,
+          representation: {version: 1, requestUrl, effectiveUrl: url.href, redirected: hops > 0,
+            conditional: {uri: url.href, etag: headers['if-none-match'] || null, lastModified: headers['if-modified-since'] || null}},
           retryable: Boolean(rateLimited || response.status >= 500)};
       }
     } catch (error) {

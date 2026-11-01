@@ -21,9 +21,11 @@ export class ResearchWatch {
   }
   get(id){
     const row=this.db.prepare('SELECT d.*,s.* FROM watch_definitions d JOIN watch_state s ON s.watch_id=d.id WHERE d.id=? OR d.name=?').get(id,id);
-    if(!row)fail('WATCH_NOT_FOUND');return {...row,definition:JSON.parse(row.definition_json),validators:JSON.parse(row.validators_json)};
+    if(!row)fail('WATCH_NOT_FOUND');
+    const activation=this.db.prepare("SELECT id FROM watch_events WHERE watch_id=? AND action='ENABLE' ORDER BY rowid DESC LIMIT 1").get(row.id);
+    return {...row,activationId:activation?.id||null,definition:JSON.parse(row.definition_json),validators:JSON.parse(row.validators_json)};
   }
-  show(id){const w=this.get(id);return {id:w.id,name:w.name,definition:w.definition,configHash:w.config_hash,state:w.status,nextDueAt:w.next_due_at,lastGoodRun:w.last_good_run,activeLease:!!w.lease_token,backgroundWorker:'NOT_STARTED',watch:'OFF'};}
+  show(id){const w=this.get(id);return {id:w.id,name:w.name,definition:w.definition,configHash:w.config_hash,state:w.status,activationId:w.activationId,nextDueAt:w.next_due_at,lastGoodRun:w.last_good_run,activeLease:!!w.lease_token,backgroundWorker:'NOT_STARTED',watch:'OFF'};}
   list({limit=50,offset=0}={}){page(limit,offset);return {watches:this.db.prepare('SELECT id FROM watch_definitions ORDER BY name LIMIT ? OFFSET ?').all(limit,offset).map(r=>this.show(r.id)),backgroundWorker:'NOT_STARTED'};}
   add(input){
     const d=definition(input,this.memory);this.analysis.brief(d.brief);const fingerprint=identity(d),at=this.memory.now();
@@ -40,19 +42,50 @@ export class ResearchWatch {
     return this.memory.transaction(()=>{
       const w=this.get(id),at=this.memory.now();if(Date.parse(at)<Date.parse(w.last_clock_at))fail('CLOCK_SKEW');
       if(w.status==='REMOVED')fail('WATCH_REMOVED');
+      if(action==='ENABLE'&&w.status==='ENABLED'){
+        this.db.prepare('UPDATE watch_state SET last_clock_at=?,updated_at=? WHERE watch_id=?').run(at,at,w.id);
+        this.event(w.id,'ENABLE_NOOP',{actor,reason,activationId:w.activationId},at);return this.show(w.id);
+      }
       if(action!=='ENABLE'&&w.active_attempt)this.db.prepare("UPDATE watch_attempts SET status='CANCELLED',finished_at=? WHERE id=? AND status='RUNNING'").run(at,w.active_attempt);
       this.db.prepare('UPDATE watch_state SET status=?,next_due_at=?,last_clock_at=?,updated_at=? WHERE watch_id=?').run(action==='ENABLE'?'ENABLED':action==='REMOVE'?'REMOVED':'DISABLED',action==='ENABLE'?at:null,at,at,w.id);
       if(action!=='ENABLE')this.db.prepare('UPDATE watch_state SET lease_token=NULL,lease_until=NULL,active_attempt=NULL WHERE watch_id=?').run(w.id);
       this.event(w.id,action,{actor,reason},at);return this.show(w.id);
     });
   }
-  claim(id,{scheduled=false,expectedDue,key}={}){
+  completedReplay(w,key,scheduled){
+    // request_key is operator input, never evidence of origin. CHECK_START is
+    // immutable and committed atomically with the attempt. Result JSON alone is
+    // mutable and cannot establish MANUAL/SCHEDULED provenance.
+    const starts=this.db.prepare("SELECT at,payload_json FROM watch_events WHERE watch_id=? AND action='CHECK_START' AND CASE WHEN json_valid(payload_json) THEN json_extract(payload_json,'$.attempt') END=? LIMIT 2");
+    const candidates=this.db.prepare("SELECT * FROM watch_attempts WHERE watch_id=? AND request_key=? AND status='COMPLETED' ORDER BY rowid DESC");
+    for(const row of candidates.iterate(w.id,key)){
+      const events=starts.all(w.id,row.id);if(events.length!==1||events[0].at!==row.started_at)continue;
+      let origin,result;try{origin=JSON.parse(events[0].payload_json);result=JSON.parse(row.result_json);}catch{continue;}
+      if(!origin||origin.attempt!==row.id||origin.scheduled!==scheduled||!result||result.attempt!==row.id||result.runId!==row.run_id)continue;
+      if(scheduled){
+        if(origin.activationId!==w.activationId||origin.dueAt!==w.next_due_at||
+          result.schedule?.activationId!==origin.activationId||result.schedule?.dueAt!==origin.dueAt)continue;
+      }else if(origin.activationId!=null||origin.dueAt!=null||result.schedule!=null)continue;
+      return result;
+    }
+    // Missing/ambiguous legacy provenance is retained, but not replayed.
+    return null;
+  }
+  claim(id,{scheduled=false,expectedDue,expectedActivation,key}={}){
+    if(typeof scheduled!=='boolean')fail('INVALID_WATCH_ACTION');
     if(key!==undefined)string(key,200);
     return this.memory.transaction(()=>{
       const w=this.get(id),at=this.memory.now();if(w.status==='REMOVED')fail('WATCH_REMOVED');
-      if(key){const prior=this.db.prepare("SELECT result_json FROM watch_attempts WHERE watch_id=? AND request_key=? AND status='COMPLETED' ORDER BY rowid DESC LIMIT 1").get(w.id,key);if(prior)return {duplicate:JSON.parse(prior.result_json)};}
+      // Scheduled eligibility and activation fencing precede completed-key
+      // lookup. The durable ENABLE event is the epoch, including equal clocks.
+      if(scheduled){
+        if(w.status!=='ENABLED'||!w.activationId||!w.next_due_at||w.next_due_at>at||
+          (expectedDue&&expectedDue!==w.next_due_at)||(expectedActivation&&expectedActivation!==w.activationId))return {skipped:'NOT_DUE'};
+        const scheduledKey=`due-v2:${identity([w.id,w.activationId,w.next_due_at])}`;
+        if(key!==undefined&&key!==scheduledKey)fail('INVALID_SCHEDULE_KEY');key=scheduledKey;
+      }
+      if(key){const prior=this.completedReplay(w,key,scheduled);if(prior)return {duplicate:prior};}
       if(Date.parse(at)<Date.parse(w.last_clock_at)){this.event(w.id,'CLOCK_SKEW',{},at);return {skipped:'CLOCK_SKEW'};}
-      if(scheduled&&(w.status!=='ENABLED'||!w.next_due_at||w.next_due_at>at||(expectedDue&&expectedDue!==w.next_due_at)))return {skipped:'NOT_DUE'};
       if(w.lease_token&&w.lease_until>at)fail('WATCH_BUSY');
       const origins=w.definition.config.allowedHosts.map(h=>`https://${h}`);
       const cooldown=origins.length?this.db.prepare(`SELECT retry_at FROM watch_cooldowns WHERE origin IN (${origins.map(()=>'?').join(',')}) AND retry_at>? ORDER BY retry_at DESC LIMIT 1`).get(...origins,at):null;
@@ -63,10 +96,10 @@ export class ResearchWatch {
       const leaseMs=Math.max(60000,l.maxRequests*(l.timeoutMs+l.maxWaitMs+l.minIntervalMs)+30000);
       this.db.prepare('INSERT INTO watch_attempts VALUES (?,?,?,?,?,?,?,?,?)').run(attempt,w.id,key||null,at,null,'RUNNING',token,null,null);
       this.db.prepare('UPDATE watch_state SET lease_token=?,lease_until=?,active_attempt=?,last_clock_at=?,updated_at=? WHERE watch_id=?').run(token,plus(at,leaseMs),attempt,at,at,w.id);
-      this.event(w.id,'CHECK_START',{attempt,scheduled,leaseMs},at);return {watch:w,at,attempt,token,scheduled};
+      this.event(w.id,'CHECK_START',{attempt,scheduled,leaseMs,activationId:scheduled?w.activationId:null,dueAt:scheduled?w.next_due_at:null},at);return {watch:w,at,attempt,token,scheduled,activationId:w.activationId,dueAt:w.next_due_at};
     });
   }
-  fenced(c){const w=this.get(c.watch.id);if(w.lease_token!==c.token||w.active_attempt!==c.attempt||w.status==='REMOVED'||(c.scheduled&&w.status!=='ENABLED'))fail('LEASE_LOST');return w;}
+  fenced(c){const w=this.get(c.watch.id);if(w.lease_token!==c.token||w.active_attempt!==c.attempt||w.status==='REMOVED'||(c.scheduled&&(w.status!=='ENABLED'||w.activationId!==c.activationId)))fail('LEASE_LOST');return w;}
   finish(c,result,sent){
     return this.memory.transaction(()=>{
       const w=this.fenced(c),at=this.memory.now(),d=w.definition;
@@ -82,7 +115,10 @@ export class ResearchWatch {
       const current=resolve(this.db,{kind:'run',id:stored.run});
       const conditionalRow=this.db.prepare("SELECT * FROM checks WHERE run_id=? AND status='NOT_MODIFIED' ORDER BY id LIMIT 1").get(stored.run);
       const conditional=conditionalRow?JSON.parse(conditionalRow.observation_json):null;
+      const representation=result.representation,condition=representation?.conditional;
       const valid304=result.status==='NOT_MODIFIED'&&!!w.last_good_run&&!!conditionalRow&&conditionalRow.baseline_status==='REUSED_LAST_GOOD'&&
+        !!w.validators.uri&&representation?.effectiveUrl===w.validators.uri&&condition?.uri===w.validators.uri&&
+        (sent.etag?condition.etag===sent.etag:!!sent.lastModified&&condition.lastModified===sent.lastModified)&&
         !!(sent.etag||sent.lastModified)&&conditionalRow.revision_id===w.validators.revisionId&&
         (sent.etag?conditional.etag===sent.etag:conditional.lastModified===sent.lastModified)&&clockOK;
       const is304=result.status==='NOT_MODIFIED';
@@ -115,7 +151,7 @@ export class ResearchWatch {
       if(!is304||!valid304)for(const [key,previous]of old)if(!seen.has(key))events.push({kind:complete&&d.source==='rss'?'REMOVED_OR_UNAVAILABLE':'STILL_UNKNOWN',identity:key,
         reason:complete&&d.source==='rss'?'NOT_OBSERVED_IN_COMPARABLE_FEED_RESPONSE; not confirmed deletion':'NOT_OBSERVED_IN_BOUNDED_OR_FAILED_RUN',left:previous,right:null,comparisonId:null,absence:'NOT_PROVEN',factualContradiction:false});
       if(!['OK','PARTIAL'].includes(result.status)&&!valid304)events.push({kind:result.status==='NOT_FOUND'?'REMOVED_OR_UNAVAILABLE':'STILL_UNKNOWN',identity:`target:${w.id}`,
-        reason:is304?'UNVALIDATED_304_BASELINE':clockOK?`FETCH_${result.status}`:'CLOCK_SKEW',left:w.validators.checkId?resolve(this.db,ref(w.validators.checkId)).items[0]:null,
+        reason:is304?'UNVALIDATED_NOT_MODIFIED_BASELINE':clockOK?`FETCH_${result.status}`:'CLOCK_SKEW',left:w.validators.checkId?resolve(this.db,ref(w.validators.checkId)).items[0]:null,
         right:{pointer:{locator:d.target.url||'https://api.github.com/search/repositories',version:`unavailable run:${stored.run}`},runId:stored.run,availability:'UNAVAILABLE',retrievedAt:effectiveAt},comparisonId:null,absence:'NOT_PROVEN',factualContradiction:false});
       if(!events.length)events.push({kind:valid304?'NOT_MODIFIED':complete?'SAME':'STILL_UNKNOWN',identity:`target:${w.id}`,reason:'NO_CAPTURED_ITEMS; absence NOT_PROVEN',left:null,right:null,comparisonId:null,absence:'NOT_PROVEN',factualContradiction:false});
       if(events.length>201)fail('WATCH_LIMIT');
@@ -127,36 +163,41 @@ export class ResearchWatch {
         for(const e of meaningful){e.id=identity([w.id,generation,e.identity,e.kind]);this.db.prepare('INSERT INTO watch_deltas VALUES (?,?,?,?,?,?,?)').run(e.id,w.id,c.attempt,effectiveAt,e.kind,e.comparisonId,encode(e));}
         reportId=identity([w.id,generation,signature]);
         const payload={version:1,method:'watch-on-e3-recorded-v1',id:reportId,watch:{id:w.id,name:d.name,timezone:d.timezone,configHash:w.config_hash},at:effectiveAt,runId:stored.run,coverageId:coverage.id,acquisitionStatus:result.status,
-          request:result.request||{},coverage:{counters:result.coverage||null,assessment:coverage.assessment,gaps:coverage.gaps,sourceRefs:coverage.usedRoutes[0]?.sourceRefs||[],providerCooldowns:result.cooldowns||[]},
+          request:result.request||{},representation:representation||null,coverage:{counters:result.coverage||null,assessment:coverage.assessment,gaps:coverage.gaps,sourceRefs:coverage.usedRoutes[0]?.sourceRefs||[],providerCooldowns:result.cooldowns||[]},
           deltas:meaningful,limitations:[...coverage.gaps,...current.limitations,'Recorded source representations; no automatic truth or deletion judgement.'],absence:'NOT_PROVEN'};
         this.db.prepare('INSERT INTO watch_deliveries VALUES (?,?,?,?,?,?,?)').run(reportId,w.id,c.attempt,effectiveAt,encode(payload),'PENDING',null);
       }
       let validators=w.validators,lastGood=w.last_good_run,membership=JSON.parse(w.membership_json);
       if(complete&&!badCapture){
         const root=this.db.prepare("SELECT c.* FROM checks c JOIN sources s ON s.id=c.source_id WHERE c.run_id=? AND c.status='OBSERVED' ORDER BY (s.source_type='feed') DESC,c.id LIMIT 1").get(stored.run);
-        if(d.source==='rss'&&root){const o=JSON.parse(root.observation_json);validators={etag:o.etag,lastModified:o.lastModified,revisionId:root.revision_id,checkId:root.id};lastGood=stored.run;membership=snapshots.map(s=>({identity:s.contentIdentity,checkId:s.checkId}));}
-        else if(d.target.mode==='pinned-audit'&&root){const o=JSON.parse(root.observation_json);validators={etag:o.etag,lastModified:o.lastModified,revisionId:root.revision_id,checkId:root.id};lastGood=stored.run;}
+        if(d.source==='rss'&&root){const o=JSON.parse(root.observation_json);validators={etag:o.etag,lastModified:o.lastModified,uri:representation?.effectiveUrl||null,revisionId:root.revision_id,checkId:root.id};lastGood=stored.run;membership=snapshots.map(s=>({identity:s.contentIdentity,checkId:s.checkId}));}
+        else if(d.target.mode==='pinned-audit'&&root){const o=JSON.parse(root.observation_json);validators={etag:o.etag,lastModified:o.lastModified,uri:representation?.effectiveUrl||null,revisionId:root.revision_id,checkId:root.id};lastGood=stored.run;}
         else if(d.target.query)lastGood=stored.run;
       }
       if(!complete&&events.some(e=>['NEW','CHANGED'].includes(e.kind)))validators={};
+      if(result.status==='UNVALIDATED_NOT_MODIFIED')validators={};
       const healthy=clockOK&&!badCapture&&(complete||valid304),failures=healthy?0:w.failure_count+1;
       const localNext=plus(effectiveAt,healthy?d.intervalMs:retryDelay(w.id,failures,d.intervalMs));
       const providerNext=(result.cooldowns||[]).map(c=>c.retryAt).sort().at(-1);
       const next=providerNext&&providerNext>localNext?providerNext:localNext;
       const outcome={attempt:c.attempt,runId:stored.run,coverageId:coverage.id,status:!clockOK?'CLOCK_SKEW':healthy?'OK':result.status==='OK'?'PARTIAL':result.status,acquisitionStatus:result.status,
+        schedule:c.scheduled?{activationId:c.activationId,dueAt:c.dueAt}:null,
         events,emitted:emit,reportId,nextDueAt:w.status==='ENABLED'?next:null,baselineRun:lastGood,watch:'OFF'};
       this.db.prepare("UPDATE watch_attempts SET finished_at=?,status='COMPLETED',run_id=?,result_json=? WHERE id=?").run(effectiveAt,stored.run,encode(outcome),c.attempt);
       this.db.prepare('UPDATE watch_state SET next_due_at=?,last_clock_at=?,failure_count=?,lease_token=NULL,lease_until=NULL,active_attempt=NULL,last_good_run=?,validators_json=?,membership_json=?,generation=?,outcome_signature=?,updated_at=? WHERE watch_id=?').run(w.status==='ENABLED'?next:null,effectiveAt,failures,lastGood,encode(validators),encode(membership),generation,signature,effectiveAt,w.id);
       this.event(w.id,'CHECK_COMPLETE',{attempt:c.attempt,run:stored.run,status:outcome.status,reportId},effectiveAt);return outcome;
     });
   }
-  async run(id,{scheduled=false,expectedDue,key,signal,write=false,allowPrivate=false}={}){
+  async run(id,{scheduled=false,expectedDue,expectedActivation,key,signal,write=false,allowPrivate=false}={}){
     if(write&&this.memory.scope==='private'&&!allowPrivate)fail('PRIVATE_EXPORT_REQUIRED');
-    const c=this.claim(id,{scheduled,expectedDue,key});if(c.skipped)return {status:c.skipped,skipped:true,...(c.retryAt?{retryAt:c.retryAt}:{}),watch:'OFF'};
+    const c=this.claim(id,{scheduled,expectedDue,expectedActivation,key});if(c.skipped)return {status:c.skipped,skipped:true,...(c.retryAt?{retryAt:c.retryAt}:{}),watch:'OFF'};
     if(c.duplicate){if(write&&c.duplicate.reportId)this.deliver(c.duplicate.reportId,{allowPrivate});return {...c.duplicate,duplicate:true};}
     let outcome;
     try{
-      const d=c.watch.definition,sent=d.target.query?{}:{etag:c.watch.validators.etag,lastModified:c.watch.validators.lastModified};
+      const d=c.watch.definition,v=c.watch.validators;
+      // Legacy cursors have no proven URI. Refresh them with an unconditional
+      // check; never infer scope from an old root accessRoute (E4 stored target).
+      const sent=d.target.query||!v.uri||(d.source==='rss'&&v.uri!==d.target.url)?{}:{etag:v.etag,lastModified:v.lastModified,validatorUrl:v.uri};
       const harness=createHarness(d.config,{...this.deps.harness,clock:()=>Date.parse(this.memory.now())});
       const result=await harness[d.target.operation](d.source,{...d.target,...sent,signal});
       if(signal?.aborted)result.status='CANCELLED';
@@ -178,11 +219,11 @@ export class ResearchWatch {
   }
   async due({limit=10,maxRequests=50,signal,write=false,allowPrivate=false}={}){
     if(!Number.isInteger(limit)||limit<1||limit>10||!Number.isInteger(maxRequests)||maxRequests<1||maxRequests>50)fail('INVALID_WATCH_BUDGET');
-    const at=this.memory.now(),rows=this.db.prepare("SELECT watch_id,next_due_at FROM watch_state WHERE status='ENABLED' AND next_due_at<=? ORDER BY next_due_at,watch_id LIMIT ?").all(at,limit);
+    const at=this.memory.now(),rows=this.db.prepare("SELECT watch_id,next_due_at,(SELECT e.id FROM watch_events e WHERE e.watch_id=s.watch_id AND e.action='ENABLE' ORDER BY e.rowid DESC LIMIT 1) activation_id FROM watch_state s WHERE status='ENABLED' AND next_due_at<=? ORDER BY next_due_at,watch_id LIMIT ?").all(at,limit);
     const results=[];let reserved=0;
     for(const row of rows){if(signal?.aborted)break;const w=this.get(row.watch_id),budget=w.definition.config.limits.maxRequests;
       if(reserved+budget>maxRequests){results.push({id:w.id,skipped:'REQUEST_BUDGET'});continue;}reserved+=budget;
-      try{results.push(await this.run(w.id,{scheduled:true,expectedDue:row.next_due_at,key:`due:${row.next_due_at}`,signal,write,allowPrivate}));}
+      try{results.push(await this.run(w.id,{scheduled:true,expectedDue:row.next_due_at,expectedActivation:row.activation_id,signal,write,allowPrivate}));}
       catch(error){results.push({id:w.id,status:code(error)});}
     }
     return {results,reservedRequests:reserved,concurrency:1,backgroundWorker:'NOT_STARTED',watch:'OFF'};

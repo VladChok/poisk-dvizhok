@@ -19,6 +19,8 @@ memory-state/
 /memory-proof.json
 /comparison-proof.json
 /watch-proof.json
+/friday-fix-proof.json
+/watch-origin-proof.json
 /offline-tests.tap
 *.sqlite.*.tmp*
 *.db.*.tmp*
