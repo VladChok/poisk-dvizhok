@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: P2 equal-clock enable cycles have durable distinct epochs and execute one new check per due slot across restart
+ok 1 - P2 equal-clock enable cycles have durable distinct epochs and execute one new check per due slot across restart
+  ---
+  duration_ms: 273.8869
+  type: 'test'
+  ...
+# Subtest: P2 enable on already enabled watch preserves future schedule/epoch/lease and performs no HTTP
+ok 2 - P2 enable on already enabled watch preserves future schedule/epoch/lease and performs no HTTP
+  ---
+  duration_ms: 113.5987
+  type: 'test'
+  ...
+# Subtest: P2 stale selected activation cannot claim equal timestamp of a new activation; old lease cannot finish
+ok 3 - P2 stale selected activation cannot claim equal timestamp of a new activation; old lease cannot finish
+  ---
+  duration_ms: 95.953
+  type: 'test'
+  ...
+# Subtest: P2 scheduled eligibility precedes completed lookup while manual keys retain replay and single receipt
+ok 4 - P2 scheduled eligibility precedes completed lookup while manual keys retain replay and single receipt
+  ---
+  duration_ms: 159.7168
+  type: 'test'
+  ...
+# Subtest: P2 two connections contend on one durable activation/slot and completed schedule advances once
+ok 5 - P2 two connections contend on one durable activation/slot and completed schedule advances once
+  ---
+  duration_ms: 110.1068
+  type: 'test'
+  ...
+# Subtest: P2 existing v3 timestamp-key history and URI survive backup/restore without schema rewrite; old loop resumes
+ok 6 - P2 existing v3 timestamp-key history and URI survive backup/restore without schema rewrite; old loop resumes
+  ---
+  duration_ms: 166.8718
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1011.1164

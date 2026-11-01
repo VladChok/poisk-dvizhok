@@ -1,0 +1,654 @@
+TAP version 13
+# Subtest: explicit v1→v2 migration retains v0 and checksum, takes real backup, is idempotent; old API refuses v2
+ok 1 - explicit v1→v2 migration retains v0 and checksum, takes real backup, is idempotent; old API refuses v2
+  ---
+  duration_ms: 137.7075
+  type: 'test'
+  ...
+# Subtest: migration requires backup, refuses overwrite and busy writer; invalid SQL rolls back with usable v1 backup
+ok 2 - migration requires backup, refuses overwrite and busy writer; invalid SQL rolls back with usable v1 backup
+  ---
+  duration_ms: 186.6825
+  type: 'test'
+  ...
+# Subtest: reads never initialize/migrate; future or drifted v2 schema is refused
+ok 3 - reads never initialize/migrate; future or drifted v2 schema is refused
+  ---
+  duration_ms: 209.1283
+  type: 'test'
+  ...
+# Subtest: same bytes on new retrieval date are SAME; changed/whitespace/translation bytes never become factual contradiction
+ok 4 - same bytes on new retrieval date are SAME; changed/whitespace/translation bytes never become factual contradiction
+  ---
+  duration_ms: 141.7467
+  type: 'test'
+  ...
+# Subtest: 304 only reuses an historical matching validator; unknown/future baseline, empty body or missing hash is inconclusive
+ok 5 - 304 only reuses an historical matching validator; unknown/future baseline, empty body or missing hash is inconclusive
+  ---
+  duration_ms: 135.7647
+  type: 'test'
+  ...
+# Subtest: different identities/names/types never auto-merge or corroborate identical syndicated content
+ok 6 - different identities/names/types never auto-merge or corroborate identical syndicated content
+  ---
+  duration_ms: 139.9686
+  type: 'test'
+  ...
+# Subtest: GitHub pinned files compare across commits only for exact repository/path, never unrelated commits
+ok 7 - GitHub pinned files compare across commits only for exact repository/path, never unrelated commits
+  ---
+  duration_ms: 128.83
+  type: 'test'
+  ...
+# Subtest: failed/empty/partial runs and missing candidates do not imply deletion or prove absence
+ok 8 - failed/empty/partial runs and missing candidates do not imply deletion or prove absence
+  ---
+  duration_ms: 124.5861
+  type: 'test'
+  ...
+# Subtest: RSS run 304 inherits captured entry membership through validated root, not invented feed bytes
+ok 9 - RSS run 304 inherits captured entry membership through validated root, not invented feed bytes
+  ---
+  duration_ms: 140.7849
+  type: 'test'
+  ...
+# Subtest: adapter coverage records real pages, raw/inspected/duplicate/invalid/filter counts and caps; configured fixture doctor stays available
+ok 10 - adapter coverage records real pages, raw/inspected/duplicate/invalid/filter counts and caps; configured fixture doctor stays available
+  ---
+  duration_ms: 3.1895
+  type: 'test'
+  ...
+# Subtest: query history separates planned routes and labels from actual runs/counters; legacy counters stay unknown
+ok 11 - query history separates planned routes and labels from actual runs/counters; legacy counters stay unknown
+  ---
+  duration_ms: 140.548
+  type: 'test'
+  ...
+# Subtest: manual competing values/dates/positions require attributed real anchors; kinds stay separate and review withdrawal appends
+ok 12 - manual competing values/dates/positions require attributed real anchors; kinds stay separate and review withdrawal appends
+  ---
+  duration_ms: 135.5469
+  type: 'test'
+  ...
+# Subtest: v0 actual claims keep original kind/text/pointer and cannot be rewritten as interpretations or promoted facts
+ok 13 - v0 actual claims keep original kind/text/pointer and cannot be rewritten as interpretations or promoted facts
+  ---
+  duration_ms: 113.8415
+  type: 'test'
+  ...
+# Subtest: SQLite triggers prohibit audit edits/deletes; E2 purge cannot remove referenced source/check/bundle
+ok 14 - SQLite triggers prohibit audit edits/deletes; E2 purge cannot remove referenced source/check/bundle
+  ---
+  duration_ms: 128.4711
+  type: 'test'
+  ...
+# Subtest: private scope/export guard, secret rejection, malformed references, caps and report markup are safe
+ok 15 - private scope/export guard, secret rejection, malformed references, caps and report markup are safe
+  ---
+  duration_ms: 133.6867
+  type: 'test'
+  ...
+# Subtest: comparison/link/coverage survive reopen and online v2 backup/restore; pre-migration backup remains E2-readable rollback
+ok 16 - comparison/link/coverage survive reopen and online v2 backup/restore; pre-migration backup remains E2-readable rollback
+  ---
+  duration_ms: 374.4512
+  type: 'test'
+  ...
+# Subtest: all v0 bundle bytes survive v2 export and existing validators/inspector
+ok 17 - all v0 bundle bytes survive v2 export and existing validators/inspector
+  ---
+  duration_ms: 247.6896
+  type: 'test'
+  ...
+# Subtest: offline CLI persists/reads comparisons, coverage, ledger and report; validates mutually exclusive and unused flags
+ok 18 - offline CLI persists/reads comparisons, coverage, ledger and report; validates mutually exclusive and unused flags
+  ---
+  duration_ms: 1191.0366
+  type: 'test'
+  ...
+# Subtest: 403/404/429/timeout and unavailable provider remain actual coverage gaps with last-known pointers
+ok 19 - 403/404/429/timeout and unavailable provider remain actual coverage gaps with last-known pointers
+  ---
+  duration_ms: 126.1931
+  type: 'test'
+  ...
+# Subtest: late-page result cap counts uninspected items; fallback retains per-attempt counters including empty failure
+ok 20 - late-page result cap counts uninspected items; fallback retains per-attempt counters including empty failure
+  ---
+  duration_ms: 108.013
+  type: 'test'
+  ...
+# Subtest: bounded union and quota failures never publish a partial saved comparison; distinct publisher dates remain source metadata
+ok 21 - bounded union and quota failures never publish a partial saved comparison; distinct publisher dates remain source metadata
+  ---
+  duration_ms: 350.9052
+  type: 'test'
+  ...
+# Subtest: doctor configuration is honest/offline, adapters disable and web is unavailable
+ok 22 - doctor configuration is honest/offline, adapters disable and web is unavailable
+  ---
+  duration_ms: 5.9561
+  type: 'test'
+  ...
+# Subtest: GitHub discovery pagination, dedup, provenance, public filtering and partial limits
+ok 23 - GitHub discovery pagination, dedup, provenance, public filtering and partial limits
+  ---
+  duration_ms: 3.1051
+  type: 'test'
+  ...
+# Subtest: GitHub empty search is not absence; unsafe qualifiers and pagination rejected
+ok 24 - GitHub empty search is not absence; unsafe qualifiers and pagination rejected
+  ---
+  duration_ms: 1.5495
+  type: 'test'
+  ...
+# Subtest: GitHub pagination failure preserves first page, max pages and max results are explicit
+ok 25 - GitHub pagination failure preserves first page, max pages and max results are explicit
+  ---
+  duration_ms: 2.2101
+  type: 'test'
+  ...
+# Subtest: GitHub pinned UTF-8 file verifies Git blob/hash and stays unauthenticated
+ok 26 - GitHub pinned UTF-8 file verifies Git blob/hash and stays unauthenticated
+  ---
+  duration_ms: 0.9292
+  type: 'test'
+  ...
+# Subtest: GitHub exact commit attributes source committer date separately from retrieval time
+ok 27 - GitHub exact commit attributes source committer date separately from retrieval time
+  ---
+  duration_ms: 0.2905
+  type: 'test'
+  ...
+# Subtest: GitHub rejects unpinned refs, private repo, invalid file, wrong blob and wrong revision
+ok 28 - GitHub rejects unpinned refs, private repo, invalid file, wrong blob and wrong revision
+  ---
+  duration_ms: 1.2657
+  type: 'test'
+  ...
+# Subtest: 304 handles GitHub search/file and feeds without invented content, conditional headers retained
+ok 29 - 304 handles GitHub search/file and feeds without invented content, conditional headers retained
+  ---
+  duration_ms: 0.7143
+  type: 'test'
+  ...
+# Subtest: RSS/Atom identities, dates, CDATA, dedup and malformed items remain auditable
+ok 30 - RSS/Atom identities, dates, CDATA, dedup and malformed items remain auditable
+  ---
+  duration_ms: 2.2489
+  type: 'test'
+  ...
+# Subtest: feed parser rejects broken XML, DTD/XXE, wrong namespace and excessive depth
+ok 31 - feed parser rejects broken XML, DTD/XXE, wrong namespace and excessive depth
+  ---
+  duration_ms: 1.2349
+  type: 'test'
+  ...
+# Subtest: RSS refuses undeclared feed and HTML response, returns sane errors
+ok 32 - RSS refuses undeclared feed and HTML response, returns sane errors
+  ---
+  duration_ms: 0.3542
+  type: 'test'
+  ...
+# Subtest: HTTP errors, revoked credentials, outages and malformed responses never leak raw messages
+    # Subtest: 401
+    ok 1 - 401
+      ---
+      duration_ms: 0.2006
+      type: 'test'
+      ...
+    # Subtest: 403
+    ok 2 - 403
+      ---
+      duration_ms: 0.107
+      type: 'test'
+      ...
+    # Subtest: 404
+    ok 3 - 404
+      ---
+      duration_ms: 0.0928
+      type: 'test'
+      ...
+    # Subtest: 429
+    ok 4 - 429
+      ---
+      duration_ms: 0.1116
+      type: 'test'
+      ...
+    # Subtest: 503
+    ok 5 - 503
+      ---
+      duration_ms: 0.0787
+      type: 'test'
+      ...
+    1..5
+ok 33 - HTTP errors, revoked credentials, outages and malformed responses never leak raw messages
+  ---
+  duration_ms: 1.14
+  type: 'test'
+  ...
+# Subtest: bounded exponential backoff, Retry-After, reset time and request quotas
+ok 34 - bounded exponential backoff, Retry-After, reset time and request quotas
+  ---
+  duration_ms: 0.6916
+  type: 'test'
+  ...
+# Subtest: timeouts include DNS and body; cancellation is explicit and prompt
+ok 35 - timeouts include DNS and body; cancellation is explicit and prompt
+  ---
+  duration_ms: 55.2126
+  type: 'test'
+  ...
+# Subtest: SSRF: URL tricks, IP literals, metadata/private DNS, mixed answers and IPv6 transitions denied
+    # Subtest: 127.0.0.1
+    ok 1 - 127.0.0.1
+      ---
+      duration_ms: 0.4273
+      type: 'test'
+      ...
+    # Subtest: 10.0.0.1
+    ok 2 - 10.0.0.1
+      ---
+      duration_ms: 0.2082
+      type: 'test'
+      ...
+    # Subtest: 172.16.1.1
+    ok 3 - 172.16.1.1
+      ---
+      duration_ms: 0.1086
+      type: 'test'
+      ...
+    # Subtest: 192.168.1.1
+    ok 4 - 192.168.1.1
+      ---
+      duration_ms: 0.1808
+      type: 'test'
+      ...
+    # Subtest: 169.254.169.254
+    ok 5 - 169.254.169.254
+      ---
+      duration_ms: 0.176
+      type: 'test'
+      ...
+    # Subtest: 100.64.0.1
+    ok 6 - 100.64.0.1
+      ---
+      duration_ms: 0.106
+      type: 'test'
+      ...
+    # Subtest: 0.0.0.0
+    ok 7 - 0.0.0.0
+      ---
+      duration_ms: 0.1546
+      type: 'test'
+      ...
+    # Subtest: 224.0.0.1
+    ok 8 - 224.0.0.1
+      ---
+      duration_ms: 0.1092
+      type: 'test'
+      ...
+    # Subtest: 192.0.2.1
+    ok 9 - 192.0.2.1
+      ---
+      duration_ms: 0.1581
+      type: 'test'
+      ...
+    # Subtest: ::1
+    ok 10 - ::1
+      ---
+      duration_ms: 0.7255
+      type: 'test'
+      ...
+    # Subtest: fe80::1
+    ok 11 - fe80::1
+      ---
+      duration_ms: 0.1339
+      type: 'test'
+      ...
+    # Subtest: fc00::1
+    ok 12 - fc00::1
+      ---
+      duration_ms: 0.0859
+      type: 'test'
+      ...
+    # Subtest: ::ffff:127.0.0.1
+    ok 13 - ::ffff:127.0.0.1
+      ---
+      duration_ms: 0.5007
+      type: 'test'
+      ...
+    # Subtest: 64:ff9b::7f00:1
+    ok 14 - 64:ff9b::7f00:1
+      ---
+      duration_ms: 0.1874
+      type: 'test'
+      ...
+    # Subtest: 2002:7f00:1::1
+    ok 15 - 2002:7f00:1::1
+      ---
+      duration_ms: 0.2239
+      type: 'test'
+      ...
+    # Subtest: 2001:db8::1
+    ok 16 - 2001:db8::1
+      ---
+      duration_ms: 0.2626
+      type: 'test'
+      ...
+    # Subtest: 3fff::1
+    ok 17 - 3fff::1
+      ---
+      duration_ms: 0.4468
+      type: 'test'
+      ...
+    1..17
+ok 36 - SSRF: URL tricks, IP literals, metadata/private DNS, mixed answers and IPv6 transitions denied
+  ---
+  duration_ms: 5.6604
+  type: 'test'
+  ...
+# Subtest: redirects revalidate DNS, strip cross-origin validators and never forward tokens
+ok 37 - redirects revalidate DNS, strip cross-origin validators and never forward tokens
+  ---
+  duration_ms: 1.5575
+  type: 'test'
+  ...
+# Subtest: wire pins checked addresses to lookup, disables agents and enforces streaming size/encoding
+ok 38 - wire pins checked addresses to lookup, disables agents and enforces streaming size/encoding
+  ---
+  duration_ms: 0.8467
+  type: 'test'
+  ...
+# Subtest: transport serializes concurrent requests, applies pacing and size bounds
+ok 39 - transport serializes concurrent requests, applies pacing and size bounds
+  ---
+  duration_ms: 7.8861
+  type: 'test'
+  ...
+# Subtest: fixture adapter is deterministic with fake clock, deduplicates and models failures
+ok 40 - fixture adapter is deterministic with fake clock, deduplicates and models failures
+  ---
+  duration_ms: 0.6256
+  type: 'test'
+  ...
+# Subtest: explicit fallback preserves failed-route summary and never invents source equivalence
+ok 41 - explicit fallback preserves failed-route summary and never invents source equivalence
+  ---
+  duration_ms: 0.9922
+  type: 'test'
+  ...
+# Subtest: RSS resolves xml:base and redirected relative links without crawling
+ok 42 - RSS resolves xml:base and redirected relative links without crawling
+  ---
+  duration_ms: 0.2885
+  type: 'test'
+  ...
+# Subtest: redirect loops have finite budget and DNS failures/invalid URLs finish promptly
+ok 43 - redirect loops have finite budget and DNS failures/invalid URLs finish promptly
+  ---
+  duration_ms: 0.5849
+  type: 'test'
+  ...
+# Subtest: live doctor reports partial adapter availability and masked auth failures
+ok 44 - live doctor reports partial adapter availability and masked auth failures
+  ---
+  duration_ms: 0.5442
+  type: 'test'
+  ...
+# Subtest: invalid configuration rejects unsafe hosts, credentials and unbounded quotas
+ok 45 - invalid configuration rejects unsafe hosts, credentials and unbounded quotas
+  ---
+  duration_ms: 0.2396
+  type: 'test'
+  ...
+# Subtest: CLI supports human/JSON output, fixture success and explicit unavailable/usage codes offline
+ok 46 - CLI supports human/JSON output, fixture success and explicit unavailable/usage codes offline
+  ---
+  duration_ms: 638.4588
+  type: 'test'
+  ...
+# Subtest: SQLite native file, schema v1, close/reopen durability, Unicode FTS and source/claim/date filters
+ok 47 - SQLite native file, schema v1, close/reopen durability, Unicode FTS and source/claim/date filters
+  ---
+  duration_ms: 98.9223
+  type: 'test'
+  ...
+# Subtest: fresh CLI processes init, fixture ingest, Cyrillic find, history, doctor and no implicit read creation
+ok 48 - fresh CLI processes init, fixture ingest, Cyrillic find, history, doctor and no implicit read creation
+  ---
+  duration_ms: 1152.9107
+  type: 'test'
+  ...
+# Subtest: idempotent exact observation/run imports, immutable revisions and 304 retain last known good
+ok 49 - idempotent exact observation/run imports, immutable revisions and 304 retain last known good
+  ---
+  duration_ms: 48.8127
+  type: 'test'
+  ...
+# Subtest: 304 stale/unknown validators and out-of-order events never reuse future content; RSS 304 retains feed membership
+ok 50 - 304 stale/unknown validators and out-of-order events never reuse future content; RSS 304 retains feed membership
+  ---
+  duration_ms: 40.6841
+  type: 'test'
+  ...
+# Subtest: failed acquisitions/partial pagination and invalid dates preserve old content and route history
+ok 51 - failed acquisitions/partial pagination and invalid dates preserve old content and route history
+  ---
+  duration_ms: 47.6584
+  type: 'test'
+  ...
+# Subtest: v0 bundle bytes roundtrip, duplicate imports, version history and validators/inspector in new processes
+ok 52 - v0 bundle bytes roundtrip, duplicate imports, version history and validators/inspector in new processes
+  ---
+  duration_ms: 891.6768
+  type: 'test'
+  ...
+# Subtest: transactions roll back failed batch/foreign key/quota writes without partial sources or claims
+ok 53 - transactions roll back failed batch/foreign key/quota writes without partial sources or claims
+  ---
+  duration_ms: 68.037
+  type: 'test'
+  ...
+# Subtest: logical SQLite growth quota rejects oversized transaction and retains prior observation
+ok 54 - logical SQLite growth quota rejects oversized transaction and retains prior observation
+  ---
+  duration_ms: 31.358
+  type: 'test'
+  ...
+# Subtest: initial migration is atomic; incomplete/future/tampered schema refuses writes with bytes unchanged
+ok 55 - initial migration is atomic; incomplete/future/tampered schema refuses writes with bytes unchanged
+  ---
+  duration_ms: 85.3128
+  type: 'test'
+  ...
+# Subtest: backup from committed WAL/read-only source, restore new root, failed restore and no overwrite
+ok 56 - backup from committed WAL/read-only source, restore new root, failed restore and no overwrite
+  ---
+  duration_ms: 178.1437
+  type: 'test'
+  ...
+# Subtest: corrupt database is preserved and CLI errors contain only codes, not data/paths
+ok 57 - corrupt database is preserved and CLI errors contain only codes, not data/paths
+  ---
+  duration_ms: 93.947
+  type: 'test'
+  ...
+# Subtest: public/private segregation, explicit private export, scope-checked restore and rejected secret fields
+ok 58 - public/private segregation, explicit private export, scope-checked restore and rejected secret fields
+  ---
+  duration_ms: 147.063
+  type: 'test'
+  ...
+# Subtest: malicious bundles: traversal, huge/garbled JSON, duplicates, extra files, snapshots, symlinks
+ok 59 - malicious bundles: traversal, huge/garbled JSON, duplicates, extra files, snapshots, symlinks
+  ---
+  duration_ms: 174.9204
+  type: 'test'
+  ...
+# Subtest: instruction-like source text is inert, find expressions cannot inject SQL, explicit purge respects evidence
+ok 60 - instruction-like source text is inert, find expressions cannot inject SQL, explicit purge respects evidence
+  ---
+  duration_ms: 76.9911
+  type: 'test'
+  ...
+# Subtest: retention is explicit and keeps last good baseline/latest check
+ok 61 - retention is explicit and keeps last good baseline/latest check
+  ---
+  duration_ms: 23.9452
+  type: 'test'
+  ...
+# Subtest: search/history paginate deterministically and date search includes later 304 checks
+ok 62 - search/history paginate deterministically and date search includes later 304 checks
+  ---
+  duration_ms: 118.3118
+  type: 'test'
+  ...
+# Subtest: separate writer processes serialize; a held lock yields bounded BUSY; process crash rolls back
+ok 63 - separate writer processes serialize; a held lock yields bounded BUSY; process crash rolls back
+  ---
+  duration_ms: 415.9335
+  type: 'test'
+  ...
+# Subtest: fresh processes resume using only saved artifacts, deterministically without RESULT
+ok 64 - fresh processes resume using only saved artifacts, deterministically without RESULT
+  ---
+  duration_ms: 185.37
+  type: 'test'
+  ...
+# Subtest: public probe passes every existing CLI operation and two saves preserve exact bytes
+ok 65 - public probe passes every existing CLI operation and two saves preserve exact bytes
+  ---
+  duration_ms: 454.0484
+  type: 'test'
+  ...
+# Subtest: tampered snapshot is rejected in a fresh CLI process
+ok 66 - tampered snapshot is rejected in a fresh CLI process
+  ---
+  duration_ms: 96.425
+  type: 'test'
+  ...
+# Subtest: unresolved evidence and missing source snapshot reject handoff
+ok 67 - unresolved evidence and missing source snapshot reject handoff
+  ---
+  duration_ms: 30.3722
+  type: 'test'
+  ...
+# Subtest: manifest cannot read outside bundle; duplicate sources and oversized files are rejected
+ok 68 - manifest cannot read outside bundle; duplicate sources and oversized files are rejected
+  ---
+  duration_ms: 37.4489
+  type: 'test'
+  ...
+# Subtest: missing brief, broken JSON and mismatched slug fail without executing source text
+ok 69 - missing brief, broken JSON and mismatched slug fail without executing source text
+  ---
+  duration_ms: 32.665
+  type: 'test'
+  ...
+# Subtest: inspect usage has explicit statuses
+ok 70 - inspect usage has explicit statuses
+  ---
+  duration_ms: 196.7069
+  type: 'test'
+  ...
+# Subtest: offline preload denies network APIs and inherits into fresh processes
+ok 71 - offline preload denies network APIs and inherits into fresh processes
+  ---
+  duration_ms: 415.5972
+  type: 'test'
+  ...
+# Subtest: demo map: 0 violations; shape required by the task
+ok 72 - demo map: 0 violations; shape required by the task
+  ---
+  duration_ms: 2.3922
+  type: 'test'
+  ...
+# Subtest: demo evidence: 0 violations; at least one negative claim by rule C (scope pointer + limitation)
+ok 73 - demo evidence: 0 violations; at least one negative claim by rule C (scope pointer + limitation)
+  ---
+  duration_ms: 0.8987
+  type: 'test'
+  ...
+# Subtest: save → reopen byte-for-byte (CLI, two generations); the committed demo is already canonical in content
+ok 74 - save → reopen byte-for-byte (CLI, two generations); the committed demo is already canonical in content
+  ---
+  duration_ms: 163.7715
+  type: 'test'
+  ...
+# Subtest: render --node on a survivor: path from the FIELD, reason, reach chain, verdict of the branch
+ok 75 - render --node on a survivor: path from the FIELD, reason, reach chain, verdict of the branch
+  ---
+  duration_ms: 0.9306
+  type: 'test'
+  ...
+# Subtest: CUT without reason → REASON
+ok 76 - CUT without reason → REASON
+  ---
+  duration_ms: 1.1466
+  type: 'test'
+  ...
+# Subtest: DONE on a leaf → DONE-LEAF (rule B)
+ok 77 - DONE on a leaf → DONE-LEAF (rule B)
+  ---
+  duration_ms: 0.4658
+  type: 'test'
+  ...
+# Subtest: DEEP_DIVE node with status DONE → DEEP-DIVE-DONE (rule B), even with a child
+ok 78 - DEEP_DIVE node with status DONE → DEEP-DIVE-DONE (rule B), even with a child
+  ---
+  duration_ms: 0.5881
+  type: 'test'
+  ...
+# Subtest: reach as an object instead of an array → SCHEMA (rule A)
+ok 79 - reach as an object instead of an array → SCHEMA (rule A)
+  ---
+  duration_ms: 0.4823
+  type: 'test'
+  ...
+# Subtest: extra field on a node → SCHEMA; reordered keys → KEY-ORDER
+ok 80 - extra field on a node → SCHEMA; reordered keys → KEY-ORDER
+  ---
+  duration_ms: 0.5942
+  type: 'test'
+  ...
+# Subtest: parent does not resolve → PARENT; two roots → ROOT; repeated id → ID-UNIQUE; candidate without sources/reach → SOURCES, REACH
+ok 81 - parent does not resolve → PARENT; two roots → ROOT; repeated id → ID-UNIQUE; candidate without sources/reach → SOURCES, REACH
+  ---
+  duration_ms: 1.9855
+  type: 'test'
+  ...
+# Subtest: evidence: map_node does not resolve → MAP-NODE
+ok 82 - evidence: map_node does not resolve → MAP-NODE
+  ---
+  duration_ms: 0.4335
+  type: 'test'
+  ...
+# Subtest: evidence: negative claim (no position) without limitation → NEGATIVE-LIMITATION (rule C)
+ok 83 - evidence: negative claim (no position) without limitation → NEGATIVE-LIMITATION (rule C)
+  ---
+  duration_ms: 0.3246
+  type: 'test'
+  ...
+# Subtest: evidence: repeated claim_id → CLAIM-UNIQUE; key order / missing version → KEY-ORDER, SCHEMA
+ok 84 - evidence: repeated claim_id → CLAIM-UNIQUE; key order / missing version → KEY-ORDER, SCHEMA
+  ---
+  duration_ms: 0.9489
+  type: 'test'
+  ...
+# Subtest: CLI: exit 1 and the rule code on a negative file; save refuses an invalid map
+ok 85 - CLI: exit 1 and the rule code on a negative file; save refuses an invalid map
+  ---
+  duration_ms: 148.2963
+  type: 'test'
+  ...
+1..85
+# tests 107
+# suites 0
+# pass 107
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4558.4712

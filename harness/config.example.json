@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "allowedHosts": ["api.github.com", "github.blog"],
+  "feeds": ["https://github.blog/feed/"],
+  "adapters": {"github": true, "rss": true, "fixture": true},
+  "limits": {
+    "timeoutMs": 10000,
+    "maxBytes": 1048576,
+    "maxResults": 20,
+    "maxRequests": 12,
+    "maxPages": 3,
+    "maxRedirects": 3,
+    "retries": 2,
+    "minIntervalMs": 1000,
+    "maxWaitMs": 30000
+  }
+}

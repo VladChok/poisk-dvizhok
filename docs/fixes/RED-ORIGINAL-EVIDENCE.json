@@ -1,0 +1,106 @@
+{
+  "base": "8208567e1ae7b30e0ae0e02ea8ad0f7c86774a3c",
+  "watch": "OFF",
+  "cases": [
+    {
+      "id": "R1-cross-origin",
+      "firstKinds": [
+        "NEW"
+      ],
+      "secondKinds": [
+        "NOT_MODIFIED"
+      ],
+      "emitted": false,
+      "cachedContentDigest": "3c0c711e090da774bdc628f9239012e9190a37bb741ea9dbbd5e4cfb9b165c37",
+      "cachedRepresentationHash": "305dffa5fe089cd44327a25d08475ad5dada5cb1314adf4a17578980294e0e75",
+      "controlStatus": "OK",
+      "controlContent": "different current representation at original URI",
+      "controlHash": "3e872e00d757b5a2924a5930d076bd7d1876639c127fa44af4164844dacbe01c",
+      "storedValidator": {
+        "checkId": "b7ebfe9a47c90d7369f13c2dfe98206358d9663474b8534fd7928c0d8721ddd3",
+        "etag": "\"v1\"",
+        "lastModified": null,
+        "revisionId": "ed9e827a4f6e5442b727ca066eca6fee662ac8d9da0f967b08d5d2063afe8a9c"
+      },
+      "calls": [
+        {
+          "phase": 0,
+          "url": "https://feeds.example.com/feed",
+          "ifNoneMatch": null
+        },
+        {
+          "phase": 0,
+          "url": "https://cdn.example.com/actual",
+          "ifNoneMatch": null
+        },
+        {
+          "phase": 1,
+          "url": "https://feeds.example.com/feed",
+          "ifNoneMatch": "\"v1\""
+        },
+        {
+          "phase": 1,
+          "url": "https://feeds.example.com/feed",
+          "ifNoneMatch": null
+        }
+      ]
+    },
+    {
+      "id": "R1-same-origin-path",
+      "firstKinds": [
+        "NEW"
+      ],
+      "secondKinds": [
+        "NOT_MODIFIED"
+      ],
+      "emitted": false,
+      "cachedContentDigest": "3c0c711e090da774bdc628f9239012e9190a37bb741ea9dbbd5e4cfb9b165c37",
+      "cachedRepresentationHash": "305dffa5fe089cd44327a25d08475ad5dada5cb1314adf4a17578980294e0e75",
+      "controlStatus": "OK",
+      "controlContent": "different current representation at original URI",
+      "controlHash": "3e872e00d757b5a2924a5930d076bd7d1876639c127fa44af4164844dacbe01c",
+      "storedValidator": {
+        "checkId": "da5c0d3589cc1cb027f4b6aa863349348a232583ea33f3c2326a30ba80ddeba1",
+        "etag": "\"v1\"",
+        "lastModified": null,
+        "revisionId": "ed9e827a4f6e5442b727ca066eca6fee662ac8d9da0f967b08d5d2063afe8a9c"
+      },
+      "calls": [
+        {
+          "phase": 0,
+          "url": "https://feeds.example.com/feed",
+          "ifNoneMatch": null
+        },
+        {
+          "phase": 0,
+          "url": "https://feeds.example.com/actual",
+          "ifNoneMatch": null
+        },
+        {
+          "phase": 1,
+          "url": "https://feeds.example.com/feed",
+          "ifNoneMatch": "\"v1\""
+        },
+        {
+          "phase": 1,
+          "url": "https://feeds.example.com/feed",
+          "ifNoneMatch": null
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "fixtureClock": "2026-10-31T12:00:00.000Z",
+      "requests": 1,
+      "firstAttempt": "a74c7350b12f2f33a187485466a690af60e0f441ea63f1556c0faf3ad188c173",
+      "secondDuplicate": true,
+      "thirdDuplicate": true,
+      "advancedClock": "2026-10-31T14:00:00.000Z",
+      "laterDuplicate": true,
+      "reportedNextDue": "2026-10-31T13:00:00.000Z",
+      "persistedNextDue": "2026-10-31T12:00:00.000Z",
+      "state": "ENABLED",
+      "historyAttempts": 1
+    }
+  ]
+}

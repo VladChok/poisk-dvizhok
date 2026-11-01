@@ -1,0 +1,16 @@
+{
+  "name": "poisk-dvizhok",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node tools/run-offline.mjs"
+  },
+  "dependencies": {
+    "better-sqlite3": "12.11.1",
+    "ipaddr.js": "2.2.0",
+    "saxes": "6.0.0"
+  }
+}

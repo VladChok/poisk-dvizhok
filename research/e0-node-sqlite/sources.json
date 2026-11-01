@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/doc/api/sqlite.md",
+      "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120",
+      "snapshot": "sources/sqlite-api.md",
+      "sha256": "837c48c15d00853b30b2055b6fac8021f38e489c7d82065e3ec8b8b6ec40f450",
+      "originalSha256": "2d665a92b0ce4205803ad96cd03ba03bff8cc4f03120da1f4b5b2c35004cde0c",
+      "originalLines": {
+        "start": 1,
+        "end": 120
+      },
+      "retrievedAt": "2026-10-31T02:29:24Z",
+      "access": "HTTPS raw.githubusercontent.com pinned commit; documentation also inspected via GitHub connector",
+      "limitation": "First-party historical source, not independent verification of runtime behavior. Snapshot contains only the stated original lines."
+    },
+    {
+      "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/lib/sqlite.js",
+      "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120",
+      "snapshot": "sources/sqlite-module.txt",
+      "sha256": "1841df68e4bd695f3ef160a094c6e27b99cdcf761c992fa14271eb0b558da8ed",
+      "originalSha256": "1841df68e4bd695f3ef160a094c6e27b99cdcf761c992fa14271eb0b558da8ed",
+      "originalLines": {
+        "start": 1,
+        "end": 5
+      },
+      "retrievedAt": "2026-10-31T02:29:24Z",
+      "access": "HTTPS raw.githubusercontent.com pinned commit; documentation also inspected via GitHub connector",
+      "limitation": "First-party historical source, not independent verification of runtime behavior. Snapshot contains only the stated original lines."
+    },
+    {
+      "locator": "https://github.com/nodejs/node/blob/48726ac59b20fe3a64eb68e9e15134a65f10e120/LICENSE",
+      "version": "48726ac59b20fe3a64eb68e9e15134a65f10e120",
+      "snapshot": "sources/NODE-LICENSE.txt",
+      "sha256": "7e16e3de8956349326d8956198d8b306946573b98299df7fd1c40a220e6927a2",
+      "originalSha256": "9d72cce9b104ecb67feb8af38618511685190ae5a119cc0488ecae66b221000d",
+      "originalLines": {
+        "start": 1,
+        "end": 23
+      },
+      "retrievedAt": "2026-10-31T02:29:24Z",
+      "access": "HTTPS raw.githubusercontent.com pinned commit; documentation also inspected via GitHub connector",
+      "limitation": "First-party historical source, not independent verification of runtime behavior. Snapshot contains only the stated original lines."
+    }
+  ]
+}

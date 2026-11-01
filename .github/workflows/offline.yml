@@ -1,0 +1,50 @@
+name: Offline contract and handoff tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2022]
+        node: ['20', '22', '24']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: node --version
+      - uses: actions/setup-python@v5
+        if: runner.os == 'Windows' && matrix.node == '20'
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm rebuild better-sqlite3 --ignore-scripts=false
+        if: runner.os == 'Windows' && matrix.node == '20'
+        env:
+          npm_config_msvs_version: '2022'
+      - run: npm rebuild better-sqlite3 --ignore-scripts=false
+        if: runner.os != 'Windows' || matrix.node != '20'
+      - run: node tools/run-offline.mjs --test-reporter=tap > offline-tests.tap
+      - run: node tools/memory-proof.mjs > memory-proof.json
+      - run: node tools/comparison-proof.mjs > comparison-proof.json
+      - run: node tools/watch-proof.mjs > watch-proof.json
+      - run: node tools/friday-fix-proof.mjs > friday-fix-proof.json
+      - run: node tools/watch-origin-proof.mjs > watch-origin-proof.json
+      - run: node tools/verify-runtime-proofs.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-proofs-${{ matrix.os }}-node-${{ matrix.node }}
+          path: |
+            offline-tests.tap
+            memory-proof.json
+            comparison-proof.json
+            watch-proof.json
+            friday-fix-proof.json
+            watch-origin-proof.json
