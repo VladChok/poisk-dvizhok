@@ -1,0 +1,31 @@
+{
+  "head": "410e06190f350726c23273213f1ffea180060d21",
+  "productionDiff": "",
+  "at": "2026-11-01T11:25:59.082Z",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "inputs": [
+    {
+      "file": "FRIDAY-FINAL-RECHECK-20261101.md",
+      "sha256": "6ecdcf7e7db6ae552a7f5f7ebb23edab57ba634254171054a52c3e9436305767"
+    },
+    {
+      "file": "reviewer-extra.test.mjs",
+      "sha256": "0aa80f7c5ce644f4644b9059d4636720e9ca06b62d62392772b1b88071757a8f"
+    }
+  ],
+  "adaptations": "Only module imports and opt-in output destination; original fixtures and assertions unchanged.",
+  "runs": [
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap tests/analysis.test.mjs tests/friday-p1.test.mjs tests/friday-p2.test.mjs tests/friday-regressions.test.mjs tests/harness.test.mjs tests/memory.test.mjs tests/research-bundle.test.mjs tests/research-map.test.mjs tests/watch.test.mjs",
+      "exitCode": 0,
+      "stdout": "BASELINE-148.tap"
+    },
+    {
+      "command": "node tools/run-offline.mjs --test-reporter=tap tests/friday-origin.test.mjs",
+      "exitCode": 1,
+      "stdout": "RED.tap"
+    }
+  ],
+  "watch": "OFF"
+}

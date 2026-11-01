@@ -41,6 +41,7 @@ The purpose of the engine is to make those foundations shared and durable instea
 - **EVIDENCE** — material and provenance supporting a research conclusion. See [research/README.md](research/README.md).
 - **MEMORY E2** — local SQLite briefs, original v0 artifacts, immutable source revisions/checks, Unicode search, history and backup/restore. See [memory/README.md](memory/README.md).
 - **COMPARISON E3** — offline recorded-version/run comparisons, reproducible query coverage and a manual competing-evidence ledger in SQLite v2. See [analysis/README.md](analysis/README.md).
+- **LOCAL WATCH E4** — explicit one-shot public GitHub/RSS checks, durable deltas/local reports and a finite opt-in due checker in SQLite v3. Default OFF; no installed scheduler. See [watch/README.md](watch/README.md).
 - **LEGEND** — shared research terms when real work establishes a need for them. See [LEGEND.md](LEGEND.md).
 - **MAP / EVIDENCE CONTRACT v0** — frozen shape of `map.json` and `evidence.jsonl`: [contract](docs/CONTRACT-research-map-evidence-v0.md), [schemas](schema/), CLI `node tools/research-map.mjs validate | validate-evidence | render | save`.
 - **SEARCHER INTEGRATION v0 (proposed, docs only)** — [operating boundary and E0 proof gate](docs/SEARCHER-INTEGRATION-v0.md). SEARCHER is a **role consuming** the engine; this document does not install a skill, run a worker or add source adapters.
@@ -70,7 +71,7 @@ not verify factual truth. See the [recorded execution](research/e0-node-sqlite/E
 [independent review gate](research/e0-node-sqlite/REVIEW-GATE.md) and
 [staged ADR](docs/ADR-ENGINE-E0-E4.md). E1 access and E2 memory are separate stages;
 E3 adds bounded representation comparison and manual links in a separate stacked Draft PR;
-E4 WATCH remains unimplemented. E0's independent source/hash review passed;
+E4 adds separately reviewed local opt-in WATCH with default OFF. E0's independent source/hash review passed;
 independent reviewer CLI execution remains HOLD.
 
 The Agent Reach source-first review and Map/Evidence contract work are documented. The next operational gate is a **real bounded research probe with a second-executor handoff** using the existing contract and CLI, as described in [SEARCHER integration](docs/SEARCHER-INTEGRATION-v0.md). Do not describe source adapters, automated access, memory or monitoring as working until independently tested and reviewed.

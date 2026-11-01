@@ -9,6 +9,10 @@ the actual version, and never silently upgrades a database. `memory migrate`
 retains its E2 validation-only meaning; use `analysis migrate --backup NEW.sqlite`
 for the explicit v1→v2 upgrade. Legacy library callers default to supportedVersion=1;
 new v2 callers must explicitly pass supportedVersion=2.
+E4 adds an explicit v2→v3 migration in `research-watch migrate --backup NEW.sqlite`.
+The current memory CLI reads/backups/restores v1/v2/v3; v1/v2 DDL are unchanged.
+Legacy library defaults remain v1; opt into supportedVersion=3 for a watch store.
+No memory operation starts polling. See [WATCH](../watch/README.md).
 
 ## Install / operator path
 
