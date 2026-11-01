@@ -199,3 +199,19 @@ No DDL/checksum/version change or automatic migration. Existing histories and
 backups remain schema3. `node tools/friday-fix-proof.mjs` adds a24-process offline
 restart/restore proof. All enable/due calls in tests use isolated fixture state.
 FRIDAY's previous HOLD requires a fresh independent decision on the submitted SHA.
+
+## Manual/scheduled origin (issue15)
+
+Completed replay uses immutable CHECK_START provenance, not the request-key spelling
+or mutable result JSON alone. Scheduled replay requires scheduled=true and exact
+watch/activation/due identity; manual replay requires scheduled=false. Both require
+a single matching start event and matching completed attempt/run. Colliding keys
+remain valid operator input; the newest eligible completion in the correct domain
+is selected, even behind a newer row of the other domain.
+
+Legacy manual starts lacking epoch/slot fields remain eligible. Missing, ambiguous,
+inconsistent or unscoped legacy scheduled provenance is kept, but not replayed:
+the next explicitly requested check acquires fresh data under normal lease/budget
+controls. No DDL/migration, history rewrite or read-time network activity. See
+[origin fix report](../docs/fixes-origin/REPORT.md). Additional fresh-process proof:
+`node tools/watch-origin-proof.mjs` (18processes); existing19/34/35/24 unchanged.

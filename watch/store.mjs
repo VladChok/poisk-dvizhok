@@ -52,7 +52,27 @@ export class ResearchWatch {
       this.event(w.id,action,{actor,reason},at);return this.show(w.id);
     });
   }
+  completedReplay(w,key,scheduled){
+    // request_key is operator input, never evidence of origin. CHECK_START is
+    // immutable and committed atomically with the attempt. Result JSON alone is
+    // mutable and cannot establish MANUAL/SCHEDULED provenance.
+    const starts=this.db.prepare("SELECT at,payload_json FROM watch_events WHERE watch_id=? AND action='CHECK_START' AND CASE WHEN json_valid(payload_json) THEN json_extract(payload_json,'$.attempt') END=? LIMIT 2");
+    const candidates=this.db.prepare("SELECT * FROM watch_attempts WHERE watch_id=? AND request_key=? AND status='COMPLETED' ORDER BY rowid DESC");
+    for(const row of candidates.iterate(w.id,key)){
+      const events=starts.all(w.id,row.id);if(events.length!==1||events[0].at!==row.started_at)continue;
+      let origin,result;try{origin=JSON.parse(events[0].payload_json);result=JSON.parse(row.result_json);}catch{continue;}
+      if(!origin||origin.attempt!==row.id||origin.scheduled!==scheduled||!result||result.attempt!==row.id||result.runId!==row.run_id)continue;
+      if(scheduled){
+        if(origin.activationId!==w.activationId||origin.dueAt!==w.next_due_at||
+          result.schedule?.activationId!==origin.activationId||result.schedule?.dueAt!==origin.dueAt)continue;
+      }else if(origin.activationId!=null||origin.dueAt!=null||result.schedule!=null)continue;
+      return result;
+    }
+    // Missing/ambiguous legacy provenance is retained, but not replayed.
+    return null;
+  }
   claim(id,{scheduled=false,expectedDue,expectedActivation,key}={}){
+    if(typeof scheduled!=='boolean')fail('INVALID_WATCH_ACTION');
     if(key!==undefined)string(key,200);
     return this.memory.transaction(()=>{
       const w=this.get(id),at=this.memory.now();if(w.status==='REMOVED')fail('WATCH_REMOVED');
@@ -64,7 +84,7 @@ export class ResearchWatch {
         const scheduledKey=`due-v2:${identity([w.id,w.activationId,w.next_due_at])}`;
         if(key!==undefined&&key!==scheduledKey)fail('INVALID_SCHEDULE_KEY');key=scheduledKey;
       }
-      if(key){const prior=this.db.prepare("SELECT result_json FROM watch_attempts WHERE watch_id=? AND request_key=? AND status='COMPLETED' ORDER BY rowid DESC LIMIT 1").get(w.id,key);if(prior)return {duplicate:JSON.parse(prior.result_json)};}
+      if(key){const prior=this.completedReplay(w,key,scheduled);if(prior)return {duplicate:prior};}
       if(Date.parse(at)<Date.parse(w.last_clock_at)){this.event(w.id,'CLOCK_SKEW',{},at);return {skipped:'CLOCK_SKEW'};}
       if(w.lease_token&&w.lease_until>at)fail('WATCH_BUSY');
       const origins=w.definition.config.allowedHosts.map(h=>`https://${h}`);

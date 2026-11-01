@@ -38,4 +38,4 @@ test('review: redirect loop never reattaches validators, every hop pins DNS, Git
   await assert.rejects(gh.get('https://api.github.com/public',{auth:true}),/UNSAFE_REDIRECT/);assert.equal(outgoing,1);
   cases.push({id:'P1-review-loop-auth',calls,dnsLookups:dns.length,crossOriginAuthRequests:0});
 });
-test.after(()=>process.env.FRIDAY_ORIGIN_EVIDENCE_FILE&&fs.writeFileSync(process.env.FRIDAY_ORIGIN_EVIDENCE_FILE,JSON.stringify({head:'410e06190f350726c23273213f1ffea180060d21',cases,watch:'OFF'},null,2)+'\n'));
+test.after(()=>process.env.FRIDAY_ORIGIN_EVIDENCE_FILE&&fs.writeFileSync(process.env.FRIDAY_ORIGIN_EVIDENCE_FILE,JSON.stringify({base:'410e06190f350726c23273213f1ffea180060d21',cases,watch:'OFF'},null,2)+'\n'));
